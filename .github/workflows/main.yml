@@ -9,24 +9,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Prepare Build Files
+        run: |
+          mkdir -p ~/.android app Salman-food
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android" -keyalg RSA -keysize 2048 -validity 10000
+          cp ~/.android/debug.keystore debug.keystore
+          cp ~/.android/debug.keystore app/debug.keystore
+          cp ~/.android/debug.keystore Salman-food/debug.keystore
+          echo '{"project_info":{"project_id":"app"},"client":[{"client_info":{"mobilesdk_app_id":"1:1:android:1","android_client_info":{"package_name":"com.salman.food"}},"api_key":[{"current_key":"key"}]}]}' > app/google-services.json
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build APK with Gradle
-        run: gradle assembleDebug --stacktrace
+      - name: Build APK
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: SalmanFood-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/**/*.apk"
           
