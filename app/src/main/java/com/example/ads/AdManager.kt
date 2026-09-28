@@ -34,7 +34,8 @@ object AdManager {
     private const val TAG = "AdManager"
 
     // Standard AdMob Test Ad Unit IDs
-    const val BANNER_TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+        const val BANNER_TEST_AD_UNIT_ID = "ca-app-pub-9790460610991387/3105118943"
+    
     const val INTERSTITIAL_TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
 
     private var interstitialAd: InterstitialAd? = null
