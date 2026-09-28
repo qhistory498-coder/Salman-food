@@ -33,11 +33,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
-        <!-- Google AdMob Sample App ID for testing -->
+        <!-- Google AdMob App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
-
+            android:value="ca-app-pub-9790460610991387~8793308323" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
