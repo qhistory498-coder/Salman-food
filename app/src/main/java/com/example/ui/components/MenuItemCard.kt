@@ -37,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.data.model.MenuItem
 import com.example.data.model.PortionOption
 import com.example.ui.theme.CharcoalCard
@@ -76,7 +78,7 @@ fun MenuItemCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            // Header: Veg/Non-Veg Badge + Titles + Badges
+            // Header: Veg/Non-Veg Badge + Titles + Badges + Dish Image
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
@@ -113,45 +115,61 @@ fun MenuItemCard(
                     }
                 }
 
-                // Badges (Bestseller / Spicy)
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    if (menuItem.isBestseller) {
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = FlameOrange.copy(alpha = 0.2f),
-                            border = BorderStroke(0.8.dp, FlameOrange)
+                // Food Recipe Image Box
+                if (menuItem.imageUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = menuItem.imageUrl,
+                        contentDescription = menuItem.name,
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, CharcoalSurfaceVariant, RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            // Badges (Bestseller / Spicy)
+            Row(
+                modifier = Modifier.padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (menuItem.isBestseller) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = FlameOrange.copy(alpha = 0.2f),
+                        border = BorderStroke(0.8.dp, FlameOrange)
+                    ) {
+                        Text(
+                            text = "BESTSELLER",
+                            color = FlameOrange,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+                if (menuItem.isSpicy) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = Color(0xFF3E1C15)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocalFireDepartment,
+                                contentDescription = "Spicy",
+                                tint = FlameOrange,
+                                modifier = Modifier.size(11.dp)
+                            )
                             Text(
-                                text = "BESTSELLER",
+                                text = "Spicy",
                                 color = FlameOrange,
                                 fontSize = 9.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                fontWeight = FontWeight.Bold
                             )
-                        }
-                    }
-                    if (menuItem.isSpicy) {
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = Color(0xFF3E1C15)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.LocalFireDepartment,
-                                    contentDescription = "Spicy",
-                                    tint = FlameOrange,
-                                    modifier = Modifier.size(11.dp)
-                                )
-                                Text(
-                                    text = "Spicy",
-                                    color = FlameOrange,
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
                         }
                     }
                 }
