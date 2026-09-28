@@ -21,7 +21,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = false,
-            rating = 4.8
+            rating = 4.8,
+            imageUrl = "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "chow_egg",
@@ -36,7 +37,8 @@ object MenuRepository {
             ),
             isBestseller = false,
             isSpicy = true,
-            rating = 4.7
+            rating = 4.7,
+            imageUrl = "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "chow_chicken",
@@ -51,7 +53,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.9
+            rating = 4.9,
+            imageUrl = "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "chow_paneer",
@@ -66,7 +69,8 @@ object MenuRepository {
             ),
             isBestseller = false,
             isSpicy = false,
-            rating = 4.7
+            rating = 4.7,
+            imageUrl = "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Rolls
@@ -76,13 +80,14 @@ object MenuRepository {
             hindiName = "वेज रोल",
             category = FoodCategory.ROLLS,
             dietType = DietType.VEG,
-            description = "Crispy lachha paratha stuffed with sautéed spiced veggies, crunchy onions, chaat masala, and mint-chilli chutney.",
+            description = "Crispy lachha paratha stuffed with sauteed spiced veggies, crunchy onions, chaat masala, and mint chutney.",
             portions = listOf(
                 PortionOption("Regular", 40)
             ),
             isBestseller = false,
             isSpicy = false,
-            rating = 4.6
+            rating = 4.6,
+            imageUrl = "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_double_egg",
@@ -90,13 +95,14 @@ object MenuRepository {
             hindiName = "डबल एग रोल",
             category = FoodCategory.ROLLS,
             dietType = DietType.EGG,
-            description = "Golden crisp paratha layered with two farm-fresh eggs, onions, green chillies, lemon zest, and secret roll masala.",
+            description = "Golden crisp paratha layered with two farm-fresh eggs, onions, green chillies, lemon zest, and signature sauce.",
             portions = listOf(
                 PortionOption("Regular", 60)
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.9
+            rating = 4.9,
+            imageUrl = "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_chicken",
@@ -110,7 +116,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.9
+            rating = 4.9,
+            imageUrl = "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_paneer",
@@ -124,7 +131,8 @@ object MenuRepository {
             ),
             isBestseller = false,
             isSpicy = false,
-            rating = 4.7
+            rating = 4.7,
+            imageUrl = "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Starters
@@ -141,7 +149,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.9
+            rating = 4.9,
+            imageUrl = "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "starter_chilli_paneer",
@@ -156,7 +165,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.8
+            rating = 4.8,
+            imageUrl = "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Momos
@@ -166,14 +176,15 @@ object MenuRepository {
             hindiName = "वेज मोमोज़",
             category = FoodCategory.MOMOS,
             dietType = DietType.VEG,
-            description = "Steamed thin-wrapper dumplings filled with finely chopped cabbage, carrots, spring onions, and garlic. Served with fiery red chutney and creamy mayo.",
+            description = "Steamed thin-wrapper dumplings filled with finely chopped cabbage, carrots, spring onions, and garlic.",
             portions = listOf(
                 PortionOption("6 pcs", 40),
                 PortionOption("10 pcs", 60)
             ),
             isBestseller = false,
             isSpicy = false,
-            rating = 4.7
+            rating = 4.7,
+            imageUrl = "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "momos_chicken",
@@ -181,14 +192,15 @@ object MenuRepository {
             hindiName = "चिकन मोमोज़",
             category = FoodCategory.MOMOS,
             dietType = DietType.NON_VEG,
-            description = "Juicy minced chicken infused with ginger, coriander, and Himalayan herbs steamed to perfection. Served with signature spicy chutney.",
+            description = "Juicy minced chicken infused with ginger, coriander, and Himalayan herbs steamed to perfection.",
             portions = listOf(
                 PortionOption("6 pcs", 60),
                 PortionOption("10 pcs", 90)
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.9
+            rating = 4.9,
+            imageUrl = "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "momos_paneer",
@@ -196,14 +208,15 @@ object MenuRepository {
             hindiName = "पनीर मोमोज़",
             category = FoodCategory.MOMOS,
             dietType = DietType.VEG,
-            description = "Delicate steamed dumplings stuffed with spiced crumbled paneer and fresh herbs. Accompanied by momo dipping sauces.",
+            description = "Delicate steamed dumplings stuffed with spiced crumbled paneer and fresh herbs. Accompanied by spicy chutney.",
             portions = listOf(
                 PortionOption("6 pcs", 50),
                 PortionOption("10 pcs", 80)
             ),
             isBestseller = false,
             isSpicy = false,
-            rating = 4.8
+            rating = 4.8,
+            imageUrl = "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Soups
@@ -213,13 +226,14 @@ object MenuRepository {
             hindiName = "हॉट एंड सोर वेज सूप",
             category = FoodCategory.SOUPS,
             dietType = DietType.VEG,
-            description = "Zesty, thick and warming Indo-Chinese soup loaded with diced veggies, mushrooms, black pepper, and vinegar.",
+            description = "Zesty, thick and warming Indo-Chinese soup loaded with diced veggies, mushrooms, black pepper, and chili oil.",
             portions = listOf(
                 PortionOption("Regular", 40)
             ),
             isBestseller = false,
             isSpicy = true,
-            rating = 4.6
+            rating = 4.6,
+            imageUrl = "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "soup_chicken_egg",
@@ -233,7 +247,8 @@ object MenuRepository {
             ),
             isBestseller = true,
             isSpicy = true,
-            rating = 4.8
+            rating = 4.8,
+            imageUrl = "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80"
         )
     )
 }
