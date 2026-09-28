@@ -30,7 +30,8 @@ data class MenuItem(
     val portions: List<PortionOption>,
     val isBestseller: Boolean = false,
     val isSpicy: Boolean = false,
-    val rating: Double = 4.8
+    val rating: Double = 4.8,
+    val imageUrl: String = ""
 )
 
 data class CartItem(
