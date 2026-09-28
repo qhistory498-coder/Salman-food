@@ -1,0 +1,6 @@
+{
+  "name": "Salman Food",
+  "description": "Street food ordering app for Salman Food featuring live 2026 menu, cart, UPI/COD payments, and WhatsApp dispatch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
