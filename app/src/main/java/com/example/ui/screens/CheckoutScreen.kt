@@ -411,7 +411,6 @@ fun CheckoutScreen(
         }
     }
 }
-
 private fun sendWhatsAppOrder(
     context: Context,
     order: OrderEntity,
@@ -441,9 +440,8 @@ private fun sendWhatsAppOrder(
         if (specialRequest.isNotBlank()) {
             appendLine("")
             appendLine("👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*")
-               appendLine("  » ❝ $specialRequest ❞")
+            appendLine("  » ❝ $specialRequest ❞")
         }
-        
         appendLine("═══════════════════════════")
         appendLine("💳 *ROYAL BILL SUMMARY*")
         appendLine("  ├ 🍽️ Culinary Items Total : ₹${order.subtotal}")
@@ -465,14 +463,8 @@ private fun sendWhatsAppOrder(
     try {
         context.startActivity(intent)
     } catch (_: Exception) { }
-        }
+}
     }
+    }
+}
 
-
-    
-    
-
-
-
-
-    
