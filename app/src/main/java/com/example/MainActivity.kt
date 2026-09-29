@@ -1,3 +1,4 @@
+
 package com.example
 
 import android.os.Bundle
@@ -22,7 +23,7 @@ import com.example.data.local.OrderEntity
 import com.example.ui.screens.CartScreen
 import com.example.ui.screens.CheckoutScreen
 import com.example.ui.screens.MenuScreen
-import com.example.ui.screens.OrderHistoryScreen
+import com.example.ui.screens.OrdersHistoryScreen
 import com.example.ui.screens.OrderSuccessScreen
 import com.example.ui.screens.SplashScreen
 import com.example.ui.theme.CharcoalDark
@@ -137,7 +138,7 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                 }
 
                 is AppScreen.History -> {
-                    OrderHistoryScreen(
+                    OrdersHistoryScreen(
                         viewModel = viewModel,
                         onNavigateBack = {
                             if (screenStack.size > 1) screenStack.removeAt(screenStack.lastIndex)
@@ -148,4 +149,3 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
         }
     }
 }
-
