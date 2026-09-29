@@ -47,6 +47,7 @@ import com.example.data.model.MenuItem
 import com.example.data.model.PortionOption
 import com.example.ui.theme.CharcoalCard
 import com.example.ui.theme.CharcoalDark
+import com.example.ui.theme.CharcoalSurface
 import com.example.ui.theme.CharcoalSurfaceVariant
 import com.example.ui.theme.FlameOrange
 import com.example.ui.theme.GoldenYellow
@@ -64,132 +65,140 @@ fun MenuItemCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = 16.dp, vertical = 7.dp)
             .testTag("menu_item_${menuItem.id}"),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = CharcoalCard
         ),
-        border = BorderStroke(1.dp, CharcoalSurfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, CharcoalSurfaceVariant.copy(alpha = 0.8f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            // Header: Veg/Non-Veg Badge + Titles + Badges + Dish Image
+            // Main Top Section: Details on Left, Image & Add Button on Right (Zomato Pattern)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.Top
+                // Left Column: Name, Description & Badges
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 12.dp)
                 ) {
-                    VegBadge(
-                        dietType = menuItem.dietType,
-                        modifier = Modifier.padding(top = 3.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = menuItem.name,
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = TextPrimary,
-                                    fontSize = 16.sp
-                                )
-                            )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        VegBadge(
+                            dietType = menuItem.dietType,
+                            modifier = Modifier.padding(end = 6.dp)
+                        )
+
+                        if (menuItem.isBestseller) {
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = FlameOrange.copy(alpha = 0.18f),
+                                border = BorderStroke(0.6.dp, FlameOrange)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = FlameOrange,
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text(
+                                        text = "MUST TRY",
+                                        color = FlameOrange,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
                         }
+
+                        if (menuItem.isSpicy) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = Color(0xFF3E1C15)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocalFireDepartment,
+                                        contentDescription = "Spicy",
+                                        tint = FlameOrange,
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text(
+                                        text = "Spicy",
+                                        color = FlameOrange,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = menuItem.name,
+                        color = TextPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
+
+                    if (menuItem.hindiName.isNotBlank()) {
                         Text(
                             text = menuItem.hindiName,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = GoldenYellow,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            color = GoldenYellow,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    if (menuItem.description.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = menuItem.description,
+                            color = TextSecondary,
+                            fontSize = 12.sp,
+                            lineHeight = 16.sp,
+                            maxLines = 2
                         )
                     }
                 }
 
-                // Food Recipe Image Box
+                // Right: Big Food Image (Zomato Card Style)
                 if (menuItem.imageUrl.isNotBlank()) {
                     AsyncImage(
                         model = menuItem.imageUrl,
                         contentDescription = menuItem.name,
                         modifier = Modifier
-                            .size(72.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(1.dp, CharcoalSurfaceVariant, RoundedCornerShape(12.dp)),
+                            .size(86.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .border(1.dp, CharcoalSurfaceVariant, RoundedCornerShape(14.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
             }
 
-            // Badges (Bestseller / Spicy)
-            Row(
-                modifier = Modifier.padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (menuItem.isBestseller) {
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = FlameOrange.copy(alpha = 0.2f),
-                        border = BorderStroke(0.8.dp, FlameOrange)
-                    ) {
-                        Text(
-                            text = "BESTSELLER",
-                            color = FlameOrange,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-                if (menuItem.isSpicy) {
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFF3E1C15)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.LocalFireDepartment,
-                                contentDescription = "Spicy",
-                                tint = FlameOrange,
-                                modifier = Modifier.size(11.dp)
-                            )
-                            Text(
-                                text = "Spicy",
-                                color = FlameOrange,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Description
-            Text(
-                text = menuItem.description,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = TextSecondary,
-                    fontSize = 12.sp,
-                    lineHeight = 16.sp
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Portion Options & Counters
+            // Portion Options & Counters (Full/Half/Regular)
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -218,14 +227,14 @@ private fun PortionRow(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        color = CharcoalDark.copy(alpha = 0.6f),
+        shape = RoundedCornerShape(12.dp),
+        color = CharcoalDark.copy(alpha = 0.7f),
         border = BorderStroke(0.8.dp, CharcoalSurfaceVariant)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = 12.dp, vertical = 7.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -241,36 +250,36 @@ private fun PortionRow(
                     text = "₹${portion.price}",
                     color = GoldenYellow,
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 14.sp
+                    fontSize = 15.sp
                 )
             }
 
-            // Quantity selector or Add Button
+            // Zomato Style ADD Button / Counter
             if (quantity == 0) {
                 Button(
                     onClick = onAdd,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = FlameOrange,
                         contentColor = Color.White
                     ),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                        horizontal = 14.dp,
-                        vertical = 4.dp
+                        horizontal = 16.dp,
+                        vertical = 2.dp
                     ),
                     modifier = Modifier
                         .height(34.dp)
                         .testTag("add_btn_${itemId}_${portion.name}")
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Add,
+                        imageVector = Icons.Default.Add,
                         contentDescription = "Add",
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "ADD",
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
                         fontSize = 12.sp
                     )
                 }
@@ -278,9 +287,9 @@ private fun PortionRow(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .background(FlameOrange.copy(alpha = 0.15f))
-                        .border(1.dp, FlameOrange, RoundedCornerShape(8.dp))
+                        .border(1.dp, FlameOrange, RoundedCornerShape(10.dp))
                 ) {
                     IconButton(
                         onClick = onRemove,
@@ -289,7 +298,7 @@ private fun PortionRow(
                             .testTag("remove_btn_${itemId}_${portion.name}")
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Remove,
+                            imageVector = Icons.Default.Remove,
                             contentDescription = "Decrease",
                             tint = FlameOrange,
                             modifier = Modifier.size(16.dp)
@@ -299,9 +308,9 @@ private fun PortionRow(
                     Text(
                         text = quantity.toString(),
                         color = TextPrimary,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp)
                     )
 
                     IconButton(
@@ -311,7 +320,7 @@ private fun PortionRow(
                             .testTag("increase_btn_${itemId}_${portion.name}")
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Add,
+                            imageVector = Icons.Default.Add,
                             contentDescription = "Increase",
                             tint = FlameOrange,
                             modifier = Modifier.size(16.dp)
