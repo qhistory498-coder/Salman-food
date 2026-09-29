@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,10 +71,10 @@ fun MenuScreen(
             .fillMaxSize()
             .background(CharcoalDark)
     ) {
-        // App Top Bar
+        // Zomato Style Premium Top Bar
         StreetFoodTopBar(
             title = "Salman Food",
-            subtitle = "सलमान फ़ूड • Street Food King",
+            subtitle = "⚡ Hot & Fresh • Fast Delivery",
             canNavigateBack = false,
             cartItemCount = cartCount,
             onCartClick = onNavigateToCart,
@@ -96,21 +98,21 @@ fun MenuScreen(
                     HeroBanner()
                 }
 
-                // Search Bar
+                // Zomato Style Search Bar
                 item {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { viewModel.setSearchQuery(it) },
                         placeholder = {
                             Text(
-                                text = "Search Chowmein, Rolls, Momos, Starters...",
+                                text = "Search 'Chowmein', 'Chicken Roll', 'Biryani'...",
                                 color = TextSecondary,
                                 fontSize = 13.sp
                             )
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Filled.Search,
+                                imageVector = Icons.Default.Search,
                                 contentDescription = "Search",
                                 tint = FlameOrange
                             )
@@ -119,14 +121,14 @@ fun MenuScreen(
                             if (searchQuery.isNotBlank()) {
                                 IconButton(onClick = { viewModel.setSearchQuery("") }) {
                                     Icon(
-                                        imageVector = Icons.Filled.Clear,
+                                        imageVector = Icons.Default.Clear,
                                         contentDescription = "Clear",
                                         tint = TextSecondary
                                     )
                                 }
                             }
                         },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = CharcoalSurface,
@@ -139,7 +141,7 @@ fun MenuScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
                             .testTag("menu_search_bar")
                     )
                 }
@@ -160,7 +162,7 @@ fun MenuScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 40.dp, horizontal = 24.dp),
+                                .padding(vertical = 48.dp, horizontal = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Surface(
@@ -170,7 +172,7 @@ fun MenuScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Filled.Fastfood,
+                                        imageVector = Icons.Default.Fastfood,
                                         contentDescription = null,
                                         tint = GoldenYellow,
                                         modifier = Modifier.size(32.dp)
@@ -179,13 +181,13 @@ fun MenuScreen(
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "No items found",
+                                text = "No dishes found",
                                 color = TextPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                             Text(
-                                text = "Try changing your search term or filter category.",
+                                text = "Try searching for something else in the menu.",
                                 color = TextSecondary,
                                 fontSize = 13.sp,
                                 textAlign = TextAlign.Center
