@@ -87,7 +87,7 @@ object MenuRepository {
             isBestseller = false,
             isSpicy = false,
             rating = 4.6,
-            imageUrl = "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1606471191009-63994c53433b?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_double_egg",
@@ -102,7 +102,7 @@ object MenuRepository {
             isBestseller = true,
             isSpicy = true,
             rating = 4.9,
-            imageUrl = "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_chicken",
@@ -117,7 +117,7 @@ object MenuRepository {
             isBestseller = true,
             isSpicy = true,
             rating = 4.9,
-            imageUrl = "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80"
         ),
         MenuItem(
             id = "roll_paneer",
@@ -132,7 +132,7 @@ object MenuRepository {
             isBestseller = false,
             isSpicy = false,
             rating = 4.7,
-            imageUrl = "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Starters
@@ -166,7 +166,7 @@ object MenuRepository {
             isBestseller = true,
             isSpicy = true,
             rating = 4.8,
-            imageUrl = "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80"
         ),
 
         // Momos
@@ -248,7 +248,7 @@ object MenuRepository {
             isBestseller = true,
             isSpicy = true,
             rating = 4.8,
-            imageUrl = "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=600&q=80"
         )
     )
 }
