@@ -75,14 +75,14 @@ fun CheckoutScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val cartItems by viewModel.cartItems.collectAsState()
-    val isSubmitting by viewModel.isSubmittingOrder.collectAsState()
+    val cartItemsState = viewModel.cartItems.collectAsState()
+    val cartItems = cartItemsState.value
 
     var customerName by remember { mutableStateOf("") }
     var customerPhone by remember { mutableStateOf("") }
     var deliveryAddress by remember { mutableStateOf("") }
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
-    val selectedPaymentMethod = "Cash on Delivery"
+    var isSubmitting by remember { mutableStateOf(false) }
 
     val foodSubtotal = cartItems.sumOf { it.price * it.quantity }
     val deliveryFee = selectedDistanceKm * 10
@@ -317,20 +317,20 @@ fun CheckoutScreen(
                         return@Button
                     }
 
-                    viewModel.submitOrder(
+                    isSubmitting = true
+                    val summary = cartItems.joinToString("\n") { "${it.name} x${it.quantity} - ₹${it.price * it.quantity}" }
+                    val order = OrderEntity(
                         customerName = customerName,
                         customerPhone = customerPhone,
                         deliveryAddress = deliveryAddress,
-                        paymentMethod = selectedPaymentMethod,
-                        deliveryFee = deliveryFee,
-                        onSuccess = { order, receipt ->
-                            sendWhatsAppOrder(context, order, deliveryFee, grandTotal)
-                            onOrderSuccess(order, receipt)
-                        },
-                        onError = { error ->
-                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-                        }
+                        itemsSummary = summary,
+                        totalPrice = grandTotal,
+                        timestamp = System.currentTimeMillis()
                     )
+
+                    sendWhatsAppOrder(context, order, deliveryFee, grandTotal)
+                    onOrderSuccess(order, summary)
+                    isSubmitting = false
                 },
                 enabled = !isSubmitting && cartItems.isNotEmpty(),
                 shape = RoundedCornerShape(12.dp),
