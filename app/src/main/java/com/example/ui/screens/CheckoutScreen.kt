@@ -430,7 +430,7 @@ private fun sendWhatsAppOrder(
         appendLine("• *Status:* 🟡 Confirmed / Direct Kitchen Pass")
         appendLine("⚜️──────────────────────────────────────⚜️")
         appendLine("👤 *GUEST INFORMATION:*")
-        appendLine("  ├ 🏷️ *Name:* ${order.customerName}")
+        appendLine("  ├ 🏷️️ *Name:* ${order.customerName}")
         appendLine("  ├ 📞 *Contact:* ${order.customerPhone}")
         appendLine("  └ 🚀 *Dispatch Mode:* Priority Express (${selectedKm} KM)")
         appendLine("📍 *DELIVERY DESTINATION:*")
@@ -440,4 +440,4 @@ private fun sendWhatsAppOrder(
         appendLine(order.itemsSummary)
         if (specialRequest.isNotBlank()) {
             appendLine("")
-            appendLine("👨
+            appendLine("?
