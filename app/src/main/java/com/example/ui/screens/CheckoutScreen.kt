@@ -129,7 +129,6 @@ fun CheckoutScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Customer Info Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -241,7 +240,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Delivery Distance Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -300,7 +298,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Bill Summary Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -345,7 +342,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Order Button
             Button(
                 onClick = {
                     if (customerName.isBlank() || customerPhone.isBlank() || deliveryAddress.isBlank()) {
@@ -432,7 +428,7 @@ private fun sendWhatsAppOrder(
         appendLine("• *Order Reference:* ${order.orderNumber}")
         appendLine("• *Date & Time:* $dateStr")
         appendLine("• *Status:* 🟡 Confirmed / Direct Kitchen Pass")
-        appendLine("⚜️──────────────────────────────────────⚜️️")
+        appendLine("⚜️──────────────────────────────────────⚜️")
         appendLine("👤 *GUEST INFORMATION:*")
         appendLine("  ├ 🏷️ *Name:* ${order.customerName}")
         appendLine("  ├ 📞 *Contact:* ${order.customerPhone}")
@@ -441,4 +437,7 @@ private fun sendWhatsAppOrder(
         appendLine("  └ 🏠 ${order.customerAddress}")
         appendLine("⚜️──────────────────────────────────────⚜️")
         appendLine("🍱 *CHEF'S CURATED ORDER:*")
- 
+        appendLine(order.itemsSummary)
+        if (specialRequest.isNotBlank()) {
+            appendLine("")
+            appendLine("👨
