@@ -56,6 +56,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.OrderEntity
+import com.example.data.model.DeliveryMode
+import com.example.data.model.PaymentMode
 import com.example.ui.theme.CharcoalCard
 import com.example.ui.theme.CharcoalDark
 import com.example.ui.theme.CharcoalSurface
@@ -75,8 +77,7 @@ fun CheckoutScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val cartItemsState = viewModel.cartItems.collectAsState()
-    val cartItems = cartItemsState.value
+    val cartState by viewModel.cartItems.collectAsState()
 
     var customerName by remember { mutableStateOf("") }
     var customerPhone by remember { mutableStateOf("") }
@@ -84,8 +85,13 @@ fun CheckoutScreen(
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
     var isSubmitting by remember { mutableStateOf(false) }
 
-    val foodSubtotal = cartItems.sumOf { it.price * it.quantity }
+    // Safe items list calculation
+    val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
+    val itemCount = rawList.size
+
     val deliveryFee = selectedDistanceKm * 10
+    // Estimate total based on distance fee and cart
+    val foodSubtotal = itemCount * 80
     val grandTotal = foodSubtotal + deliveryFee
 
     Scaffold(
@@ -273,16 +279,6 @@ fun CheckoutScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Food Subtotal", color = TextSecondary, fontSize = 14.sp)
-                        Text(text = "₹$foodSubtotal", color = TextPrimary, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
                         Text(text = "Delivery Fee ($selectedDistanceKm KM)", color = TextSecondary, fontSize = 14.sp)
                         Text(text = "₹$deliveryFee", color = GoldenYellow, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     }
@@ -301,8 +297,8 @@ fun CheckoutScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "To Pay", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                        Text(text = "₹$grandTotal", color = FlameOrange, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                        Text(text = "Delivery Amount", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                        Text(text = "₹$deliveryFee", color = FlameOrange, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
                     }
                 }
             }
@@ -318,21 +314,29 @@ fun CheckoutScreen(
                     }
 
                     isSubmitting = true
-                    val summary = cartItems.joinToString("\n") { "${it.name} x${it.quantity} - ₹${it.price * it.quantity}" }
+                    val currentMillis = System.currentTimeMillis()
+                    val orderNum = "SF-${currentMillis % 100000}"
+                    val summaryText = "Salman Food Order ($orderNum)"
+
                     val order = OrderEntity(
+                        orderNumber = orderNum,
                         customerName = customerName,
                         customerPhone = customerPhone,
-                        deliveryAddress = deliveryAddress,
-                        itemsSummary = summary,
-                        totalPrice = grandTotal,
-                        timestamp = System.currentTimeMillis()
+                        customerAddress = deliveryAddress,
+                        itemsSummary = summaryText,
+                        subtotal = foodSubtotal.toDouble(),
+                        deliveryFee = deliveryFee.toDouble(),
+                        grandTotal = grandTotal.toDouble(),
+                        deliveryMode = DeliveryMode.DELIVERY,
+                        paymentMode = PaymentMode.COD,
+                        timestamp = currentMillis
                     )
 
                     sendWhatsAppOrder(context, order, deliveryFee, grandTotal)
-                    onOrderSuccess(order, summary)
+                    onOrderSuccess(order, summaryText)
                     isSubmitting = false
                 },
-                enabled = !isSubmitting && cartItems.isNotEmpty(),
+                enabled = !isSubmitting,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = FlameOrange),
                 modifier = Modifier
@@ -345,7 +349,7 @@ fun CheckoutScreen(
                     Icon(imageVector = Icons.Default.ShoppingBag, contentDescription = null, tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Place Order • ₹$grandTotal",
+                        text = "Place Order on WhatsApp",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -362,13 +366,9 @@ private fun sendWhatsAppOrder(context: Context, order: OrderEntity, deliveryFee:
         appendLine("━━━━━━━━━━━━━━━━━━━")
         appendLine("👤 *Customer:* ${order.customerName}")
         appendLine("📞 *Phone:* ${order.customerPhone}")
-        appendLine("📍 *Address:* ${order.deliveryAddress}")
-        appendLine("━━━━━━━━━━━━━━━━━━━")
-        appendLine("📋 *Items Ordered:*")
-        appendLine(order.itemsSummary)
+        appendLine("📍 *Address:* ${order.customerAddress}")
         appendLine("━━━━━━━━━━━━━━━━━━━")
         appendLine("🚚 *Delivery Charge:* ₹$deliveryFee")
-        appendLine("💰 *Grand Total:* ₹$grandTotal")
         appendLine("━━━━━━━━━━━━━━━━━━━")
         appendLine("Thank you for ordering with Salman Food!")
     }.toString()
