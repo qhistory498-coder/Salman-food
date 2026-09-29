@@ -56,8 +56,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.OrderEntity
-import com.example.data.model.DeliveryMode
-import com.example.data.model.PaymentMode
 import com.example.ui.theme.CharcoalCard
 import com.example.ui.theme.CharcoalDark
 import com.example.ui.theme.CharcoalSurface
@@ -85,14 +83,12 @@ fun CheckoutScreen(
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
     var isSubmitting by remember { mutableStateOf(false) }
 
-    // Safe items list calculation
     val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
     val itemCount = rawList.size
 
-    val deliveryFee = selectedDistanceKm * 10
-    // Estimate total based on distance fee and cart
-    val foodSubtotal = itemCount * 80
-    val grandTotal = foodSubtotal + deliveryFee
+    val deliveryFee: Int = selectedDistanceKm * 10
+    val foodSubtotal: Int = itemCount * 80
+    val grandTotal: Int = foodSubtotal + deliveryFee
 
     Scaffold(
         topBar = {
@@ -324,11 +320,11 @@ fun CheckoutScreen(
                         customerPhone = customerPhone,
                         customerAddress = deliveryAddress,
                         itemsSummary = summaryText,
-                        subtotal = foodSubtotal.toDouble(),
-                        deliveryFee = deliveryFee.toDouble(),
-                        grandTotal = grandTotal.toDouble(),
-                        deliveryMode = DeliveryMode.DELIVERY,
-                        paymentMode = PaymentMode.COD,
+                        subtotal = foodSubtotal,
+                        deliveryFee = deliveryFee,
+                        grandTotal = grandTotal,
+                        deliveryMode = "DELIVERY",
+                        paymentMode = "COD",
                         timestamp = currentMillis
                     )
 
