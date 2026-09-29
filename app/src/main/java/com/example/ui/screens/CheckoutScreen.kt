@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -65,6 +66,9 @@ import com.example.ui.theme.GoldenYellow
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
 import com.example.ui.viewmodel.FoodOrderViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,14 +84,17 @@ fun CheckoutScreen(
     var customerName by remember { mutableStateOf("") }
     var customerPhone by remember { mutableStateOf("") }
     var deliveryAddress by remember { mutableStateOf("") }
+    var landmark by remember { mutableStateOf("") }
+    var specialInstructions by remember { mutableStateOf("") }
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
     var isSubmitting by remember { mutableStateOf(false) }
 
+    // Safe extraction of cart items
     val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
-    val itemCount = rawList.size
+    val itemCount = if (rawList.isNotEmpty()) rawList.size else 1
 
     val deliveryFee: Int = selectedDistanceKm * 10
-    val foodSubtotal: Int = itemCount * 80
+    val foodSubtotal: Int = itemCount * 40
     val grandTotal: Int = foodSubtotal + deliveryFee
 
     Scaffold(
@@ -179,9 +186,47 @@ fun CheckoutScreen(
                     OutlinedTextField(
                         value = deliveryAddress,
                         onValueChange = { deliveryAddress = it },
-                        label = { Text("Delivery Address") },
+                        label = { Text("Delivery Address (Area / Mohalla)") },
                         leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
-                        maxLines = 3,
+                        maxLines = 2,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = FlameOrange,
+                            unfocusedBorderColor = CharcoalSurfaceVariant,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedLabelColor = FlameOrange,
+                            unfocusedLabelColor = TextSecondary
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = landmark,
+                        onValueChange = { landmark = it },
+                        label = { Text("Landmark (Optional)") },
+                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = FlameOrange,
+                            unfocusedBorderColor = CharcoalSurfaceVariant,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedLabelColor = FlameOrange,
+                            unfocusedLabelColor = TextSecondary
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = specialInstructions,
+                        onValueChange = { specialInstructions = it },
+                        label = { Text("Special Request (e.g. less oil, extra spicy)") },
+                        leadingIcon = { Icon(Icons.Default.EditNote, contentDescription = null, tint = FlameOrange) },
+                        singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = FlameOrange,
                             unfocusedBorderColor = CharcoalSurfaceVariant,
@@ -311,25 +356,43 @@ fun CheckoutScreen(
 
                     isSubmitting = true
                     val currentMillis = System.currentTimeMillis()
-                    val orderNum = "SF-${currentMillis % 100000}"
-                    val summaryText = "Salman Food Order ($orderNum)"
+                    val orderNum = "#SF-2026-${(currentMillis % 9000 + 1000)}"
+
+                    // Items representation
+                    val itemsFormatted = if (rawList.isNotEmpty()) {
+                        rawList.mapIndexed { index, item ->
+                            val text = item.toString()
+                            "${index + 1}. $text"
+                        }.joinToString("\n")
+                    } else {
+                        "1. Ordered Food Item x 1"
+                    }
+
+                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress\nLandmark: $landmark" else deliveryAddress
 
                     val order = OrderEntity(
                         orderNumber = orderNum,
                         customerName = customerName,
                         customerPhone = customerPhone,
-                        customerAddress = deliveryAddress,
-                        itemsSummary = summaryText,
+                        customerAddress = fullAddress,
+                        itemsSummary = itemsFormatted,
                         subtotal = foodSubtotal,
                         deliveryFee = deliveryFee,
                         grandTotal = grandTotal,
-                        deliveryMode = "DELIVERY",
-                        paymentMode = "COD",
+                        deliveryMode = "Home Delivery (+₹$deliveryFee)",
+                        paymentMode = "Cash on Delivery (COD)",
                         timestamp = currentMillis
                     )
 
-                    sendWhatsAppOrder(context, order, deliveryFee, grandTotal)
-                    onOrderSuccess(order, summaryText)
+                    sendWhatsAppOrder(
+                        context = context,
+                        order = order,
+                        selectedKm = selectedDistanceKm,
+                        landmark = landmark,
+                        specialRequest = specialInstructions
+                    )
+
+                    onOrderSuccess(order, itemsFormatted)
                     isSubmitting = false
                 },
                 enabled = !isSubmitting,
@@ -356,23 +419,29 @@ fun CheckoutScreen(
     }
 }
 
-private fun sendWhatsAppOrder(context: Context, order: OrderEntity, deliveryFee: Int, grandTotal: Int) {
-    val message = StringBuilder().apply {
-        appendLine("🍔 *NEW ORDER - SALMAN FOOD*")
-        appendLine("━━━━━━━━━━━━━━━━━━━")
-        appendLine("👤 *Customer:* ${order.customerName}")
-        appendLine("📞 *Phone:* ${order.customerPhone}")
-        appendLine("📍 *Address:* ${order.customerAddress}")
-        appendLine("━━━━━━━━━━━━━━━━━━━")
-        appendLine("🚚 *Delivery Charge:* ₹$deliveryFee")
-        appendLine("━━━━━━━━━━━━━━━━━━━")
-        appendLine("Thank you for ordering with Salman Food!")
-    }.toString()
+private fun sendWhatsAppOrder(
+    context: Context,
+    order: OrderEntity,
+    selectedKm: Int,
+    landmark: String,
+    specialRequest: String
+) {
+    val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
 
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
-    }
-    try {
-        context.startActivity(intent)
-    } catch (_: Exception) { }
-}
+    val message = StringBuilder().apply {
+        appendLine("🔥 *NEW ORDER - SALMAN FOOD (सलमान फ़ूड)* 🔥")
+        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
+        appendLine("📋 *Order ID:* ${order.orderNumber}")
+        appendLine("🕒 *Time:* $dateStr")
+        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
+        appendLine("👤 *Customer Details:*")
+        appendLine("• *Name:* ${order.customerName}")
+        appendLine("• *Phone:* ${order.customerPhone}")
+        appendLine("• *Mode:* Home Delivery (+₹${order.deliveryFee}) [${selectedKm} KM]")
+        appendLine("📍 *Delivery Address:*")
+        appendLine(order.customerAddress)
+        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
+        appendLine("🍱 *Ordered Items:*")
+        appendLine(order.itemsSummary)
+        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
+        
