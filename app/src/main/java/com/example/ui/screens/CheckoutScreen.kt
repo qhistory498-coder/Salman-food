@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
@@ -51,11 +53,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.data.local.OrderEntity
 import com.example.ui.theme.CharcoalCard
 import com.example.ui.theme.CharcoalDark
@@ -69,6 +74,24 @@ import com.example.ui.viewmodel.FoodOrderViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+// Royal Metallic Gold Brush
+val RoyalGoldGradient = Brush.linearGradient(
+    colors = listOf(
+        Color(0xFFD4AF37), // Metallic Gold
+        Color(0xFFFFDF73), // Bright Champagne Gold
+        Color(0xFFAA7A1E), // Deep Rich Gold
+        Color(0xFFFFE082)  // Soft Gold Highlight
+    )
+)
+
+val DarkGoldGradient = Brush.linearGradient(
+    colors = listOf(
+        Color(0xFF1E180A),
+        Color(0xFF2C220E),
+        Color(0xFF1A1408)
+    )
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +111,9 @@ fun CheckoutScreen(
     var specialInstructions by remember { mutableStateOf("") }
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
     var isSubmitting by remember { mutableStateOf(false) }
+
+    var completedOrder by remember { mutableStateOf<OrderEntity?>(null) }
+    var showGoldReceiptDialog by remember { mutableStateOf(false) }
 
     val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
     val itemCount = if (rawList.isNotEmpty()) rawList.size else 1
@@ -129,6 +155,7 @@ fun CheckoutScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+            // Customer Info Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -240,6 +267,7 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
+            // Delivery Distance Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -298,6 +326,7 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
+            // Bill Breakdown Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -342,6 +371,7 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Place Order Button
             Button(
                 onClick = {
                     if (customerName.isBlank() || customerPhone.isBlank() || deliveryAddress.isBlank()) {
@@ -362,7 +392,7 @@ fun CheckoutScreen(
                         "1. Ordered Food Item x 1"
                     }
 
-                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress\nLandmark: $landmark" else deliveryAddress
+                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress (Near $landmark)" else deliveryAddress
 
                     val order = OrderEntity(
                         orderNumber = orderNum,
@@ -378,15 +408,8 @@ fun CheckoutScreen(
                         timestamp = currentMillis
                     )
 
-                    sendWhatsAppOrder(
-                        context = context,
-                        order = order,
-                        selectedKm = selectedDistanceKm,
-                        landmark = landmark,
-                        specialRequest = specialInstructions
-                    )
-
-                    onOrderSuccess(order, itemsFormatted)
+                    completedOrder = order
+                    showGoldReceiptDialog = true
                     isSubmitting = false
                 },
                 enabled = !isSubmitting,
@@ -402,7 +425,7 @@ fun CheckoutScreen(
                     Icon(imageVector = Icons.Default.ShoppingBag, contentDescription = null, tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Place Order on WhatsApp",
+                        text = "Generate Royal Gold Bill",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -411,35 +434,18 @@ fun CheckoutScreen(
             }
         }
     }
-}
 
-private fun sendWhatsAppOrder(
-    context: Context,
-    order: OrderEntity,
-    selectedKm: Int,
-    landmark: String,
-    specialRequest: String
-) {
-    val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
-
-    val message = StringBuilder().apply {
-        appendLine("🔥 *NEW ORDER - SALMAN FOOD (सलमान फ़ूड)* 🔥")
-        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
-        appendLine("📋 *Order ID:* ${order.orderNumber}")
-        appendLine("🕒 *Time:* $dateStr")
-        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
-        appendLine("👤 *Customer Details:*")
-        appendLine("• *Name:* ${order.customerName}")
-        appendLine("• *Phone:* ${order.customerPhone}")
-        appendLine("• *Mode:* Home Delivery (+₹${order.deliveryFee}) [${selectedKm} KM]")
-        appendLine("📍 *Delivery Address:*")
-        appendLine(order.customerAddress)
-        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
-        appendLine("🍱 *Ordered Items:*")
-        appendLine(order.itemsSummary)
-        appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
-        appendLine("💵 *Bill Details:*")
-        appendLine("• Item Subtotal: ₹${order.subtotal}")
-        appendLine("• Delivery Charge: ₹${order.deliveryFee}")
-        appendLine("• *Grand Total: ₹${order.grandTotal}*")
-        appendLine("━━━━━━━━━━━━━━━━━━━━
+    // 🌟 ROYAL GOLD RECEIPT POPUP DIALOG 🌟
+    if (showGoldReceiptDialog && completedOrder != null) {
+        val order = completedOrder!!
+        Dialog(onDismissRequest = { /* Require user to click action */ }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, RoyalGoldGradient, RoundedCornerShape(22.dp))
+                    .background(DarkGoldGradient, RoundedCornerShape(22.dp))
+                    .padding(20.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
