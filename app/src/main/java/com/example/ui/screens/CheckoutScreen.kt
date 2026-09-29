@@ -89,7 +89,6 @@ fun CheckoutScreen(
     var selectedDistanceKm by remember { mutableIntStateOf(1) }
     var isSubmitting by remember { mutableStateOf(false) }
 
-    // Safe extraction of cart items
     val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
     val itemCount = if (rawList.isNotEmpty()) rawList.size else 1
 
@@ -130,7 +129,6 @@ fun CheckoutScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Customer Info Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -242,7 +240,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Delivery Distance Selector Card (1KM = 10, 2KM = 20, 3KM = 30)
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -301,7 +298,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Bill Breakdown Card
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CharcoalCard),
@@ -346,7 +342,6 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Place Order Button
             Button(
                 onClick = {
                     if (customerName.isBlank() || customerPhone.isBlank() || deliveryAddress.isBlank()) {
@@ -358,7 +353,6 @@ fun CheckoutScreen(
                     val currentMillis = System.currentTimeMillis()
                     val orderNum = "#SF-2026-${(currentMillis % 9000 + 1000)}"
 
-                    // Items representation
                     val itemsFormatted = if (rawList.isNotEmpty()) {
                         rawList.mapIndexed { index, item ->
                             val text = item.toString()
@@ -444,4 +438,8 @@ private fun sendWhatsAppOrder(
         appendLine("🍱 *Ordered Items:*")
         appendLine(order.itemsSummary)
         appendLine("━━━━━━━━━━━━━━━━━━━━━━━━━")
-        
+        appendLine("💵 *Bill Details:*")
+        appendLine("• Item Subtotal: ₹${order.subtotal}")
+        appendLine("• Delivery Charge: ₹${order.deliveryFee}")
+        appendLine("• *Grand Total: ₹${order.grandTotal}*")
+        appendLine("━━━━━━━━━━━━━━━━━━━━
