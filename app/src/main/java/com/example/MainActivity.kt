@@ -22,13 +22,15 @@ import com.example.data.local.OrderEntity
 import com.example.ui.screens.CartScreen
 import com.example.ui.screens.CheckoutScreen
 import com.example.ui.screens.MenuScreen
+import com.example.ui.screens.OrderHistoryScreen
 import com.example.ui.screens.OrderSuccessScreen
-import com.example.ui.screens.OrdersHistoryScreen
+import com.example.ui.screens.SplashScreen
 import com.example.ui.theme.CharcoalDark
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.FoodOrderViewModel
 
 sealed class AppScreen {
+    object Splash : AppScreen()
     object Menu : AppScreen()
     object Cart : AppScreen()
     object Checkout : AppScreen()
@@ -54,10 +56,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
-    val screenStack = remember { mutableStateListOf<AppScreen>(AppScreen.Menu) }
+    // Start with 4-second Animated 3D Splash Screen
+    val screenStack = remember { mutableStateListOf<AppScreen>(AppScreen.Splash) }
     val currentScreen = screenStack.lastOrNull() ?: AppScreen.Menu
 
-    val canGoBack = screenStack.size > 1
+    val canGoBack = screenStack.size > 1 && currentScreen !is AppScreen.Splash
     BackHandler(enabled = canGoBack) {
         if (screenStack.size > 1) {
             screenStack.removeAt(screenStack.lastIndex)
@@ -76,6 +79,15 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
             label = "ScreenTransition"
         ) { screen ->
             when (screen) {
+                is AppScreen.Splash -> {
+                    SplashScreen(
+                        onSplashFinished = {
+                            screenStack.clear()
+                            screenStack.add(AppScreen.Menu)
+                        }
+                    )
+                }
+
                 is AppScreen.Menu -> {
                     MenuScreen(
                         viewModel = viewModel,
@@ -125,7 +137,7 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                 }
 
                 is AppScreen.History -> {
-                    OrdersHistoryScreen(
+                    OrderHistoryScreen(
                         viewModel = viewModel,
                         onNavigateBack = {
                             if (screenStack.size > 1) screenStack.removeAt(screenStack.lastIndex)
@@ -136,3 +148,4 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
         }
     }
 }
+
