@@ -57,10 +57,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.data.local.OrderEntity
 import com.example.ui.theme.CharcoalCard
 import com.example.ui.theme.CharcoalDark
@@ -74,24 +72,6 @@ import com.example.ui.viewmodel.FoodOrderViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-// Royal Metallic Gold Brush
-val RoyalGoldGradient = Brush.linearGradient(
-    colors = listOf(
-        Color(0xFFD4AF37), // Metallic Gold
-        Color(0xFFFFDF73), // Bright Champagne Gold
-        Color(0xFFAA7A1E), // Deep Rich Gold
-        Color(0xFFFFE082)  // Soft Gold Highlight
-    )
-)
-
-val DarkGoldGradient = Brush.linearGradient(
-    colors = listOf(
-        Color(0xFF1E180A),
-        Color(0xFF2C220E),
-        Color(0xFF1A1408)
-    )
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +93,7 @@ fun CheckoutScreen(
     var isSubmitting by remember { mutableStateOf(false) }
 
     var completedOrder by remember { mutableStateOf<OrderEntity?>(null) }
-    var showGoldReceiptDialog by remember { mutableStateOf(false) }
+    var showGoldReceipt by remember { mutableStateOf(false) }
 
     val rawList = (cartState as? Collection<*>)?.toList() ?: emptyList<Any>()
     val itemCount = if (rawList.isNotEmpty()) rawList.size else 1
@@ -121,6 +101,10 @@ fun CheckoutScreen(
     val deliveryFee: Int = selectedDistanceKm * 10
     val foodSubtotal: Int = itemCount * 40
     val grandTotal: Int = foodSubtotal + deliveryFee
+
+    val goldBorderBrush = Brush.linearGradient(
+        colors = listOf(Color(0xFFD4AF37), Color(0xFFFFDF73), Color(0xFFAA7A1E))
+    )
 
     Scaffold(
         topBar = {
@@ -148,304 +132,290 @@ fun CheckoutScreen(
         containerColor = CharcoalDark,
         modifier = modifier
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
         ) {
-            // Customer Info Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CharcoalCard),
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Customer Details",
-                        color = TextPrimary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                // Customer Info Card
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = CharcoalCard),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Customer Details",
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = customerName,
-                        onValueChange = { customerName = it },
-                        label = { Text("Your Name") },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = FlameOrange) },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = FlameOrange,
-                            unfocusedBorderColor = CharcoalSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedLabelColor = FlameOrange,
-                            unfocusedLabelColor = TextSecondary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = customerName,
+                            onValueChange = { customerName = it },
+                            label = { Text("Your Name") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = FlameOrange) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = FlameOrange,
+                                unfocusedBorderColor = CharcoalSurfaceVariant,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedLabelColor = FlameOrange,
+                                unfocusedLabelColor = TextSecondary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = customerPhone,
-                        onValueChange = { customerPhone = it },
-                        label = { Text("Phone Number") },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = FlameOrange) },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = FlameOrange,
-                            unfocusedBorderColor = CharcoalSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedLabelColor = FlameOrange,
-                            unfocusedLabelColor = TextSecondary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = customerPhone,
+                            onValueChange = { customerPhone = it },
+                            label = { Text("Phone Number") },
+                            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = FlameOrange) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = FlameOrange,
+                                unfocusedBorderColor = CharcoalSurfaceVariant,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedLabelColor = FlameOrange,
+                                unfocusedLabelColor = TextSecondary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = deliveryAddress,
-                        onValueChange = { deliveryAddress = it },
-                        label = { Text("Delivery Address (Area / Mohalla)") },
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
-                        maxLines = 2,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = FlameOrange,
-                            unfocusedBorderColor = CharcoalSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedLabelColor = FlameOrange,
-                            unfocusedLabelColor = TextSecondary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = deliveryAddress,
+                            onValueChange = { deliveryAddress = it },
+                            label = { Text("Delivery Address (Area / Mohalla)") },
+                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
+                            maxLines = 2,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = FlameOrange,
+                                unfocusedBorderColor = CharcoalSurfaceVariant,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedLabelColor = FlameOrange,
+                                unfocusedLabelColor = TextSecondary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = landmark,
-                        onValueChange = { landmark = it },
-                        label = { Text("Landmark (Optional)") },
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = FlameOrange,
-                            unfocusedBorderColor = CharcoalSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedLabelColor = FlameOrange,
-                            unfocusedLabelColor = TextSecondary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = landmark,
+                            onValueChange = { landmark = it },
+                            label = { Text("Landmark (Optional)") },
+                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = FlameOrange) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = FlameOrange,
+                                unfocusedBorderColor = CharcoalSurfaceVariant,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedLabelColor = FlameOrange,
+                                unfocusedLabelColor = TextSecondary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = specialInstructions,
-                        onValueChange = { specialInstructions = it },
-                        label = { Text("Special Request (e.g. less oil, extra spicy)") },
-                        leadingIcon = { Icon(Icons.Default.EditNote, contentDescription = null, tint = FlameOrange) },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = FlameOrange,
-                            unfocusedBorderColor = CharcoalSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedLabelColor = FlameOrange,
-                            unfocusedLabelColor = TextSecondary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = specialInstructions,
+                            onValueChange = { specialInstructions = it },
+                            label = { Text("Special Request (e.g. less oil, extra spicy)") },
+                            leadingIcon = { Icon(Icons.Default.EditNote, contentDescription = null, tint = FlameOrange) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = FlameOrange,
+                                unfocusedBorderColor = CharcoalSurfaceVariant,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedLabelColor = FlameOrange,
+                                unfocusedLabelColor = TextSecondary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-            // Delivery Distance Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CharcoalCard),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Delivery Distance & Charge",
-                        color = TextPrimary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "Salman Food Delivery: ₹10 per Kilometer",
-                        color = TextSecondary,
-                        fontSize = 12.sp
-                    )
+                // Delivery Distance Card
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = CharcoalCard),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Delivery Distance & Charge",
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "Salman Food Delivery: ₹10 per Kilometer",
+                            color = TextSecondary,
+                            fontSize = 12.sp
+                        )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf(1, 2, 3, 5).forEach { km ->
-                            val isSelected = selectedDistanceKm == km
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = if (isSelected) FlameOrange else CharcoalSurface,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { selectedDistanceKm = km }
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(vertical = 10.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(1, 2, 3, 5).forEach { km ->
+                                val isSelected = selectedDistanceKm == km
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (isSelected) FlameOrange else CharcoalSurface,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { selectedDistanceKm = km }
                                 ) {
-                                    Text(
-                                        text = "$km KM",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 13.sp,
-                                        color = if (isSelected) Color.White else TextPrimary
-                                    )
-                                    Text(
-                                        text = "₹${km * 10}",
-                                        fontSize = 11.sp,
-                                        color = if (isSelected) GoldenYellow else TextSecondary
-                                    )
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier.padding(vertical = 10.dp)
+                                    ) {
+                                        Text(
+                                            text = "$km KM",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            color = if (isSelected) Color.White else TextPrimary
+                                        )
+                                        Text(
+                                            text = "₹${km * 10}",
+                                            fontSize = 11.sp,
+                                            color = if (isSelected) GoldenYellow else TextSecondary
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-            // Bill Breakdown Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CharcoalCard),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Bill Summary",
-                        color = TextPrimary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+                // Bill Summary Card
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = CharcoalCard),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Bill Summary",
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = "Delivery Fee ($selectedDistanceKm KM)", color = TextSecondary, fontSize = 14.sp)
-                        Text(text = "₹$deliveryFee", color = GoldenYellow, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                    }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = "Delivery Fee ($selectedDistanceKm KM)", color = TextSecondary, fontSize = 14.sp)
+                            Text(text = "₹$deliveryFee", color = GoldenYellow, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(CharcoalSurfaceVariant)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .background(CharcoalSurfaceVariant)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Delivery Amount", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                        Text(text = "₹$deliveryFee", color = FlameOrange, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "Delivery Amount", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                            Text(text = "₹$deliveryFee", color = FlameOrange, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            // Place Order Button
-            Button(
-                onClick = {
-                    if (customerName.isBlank() || customerPhone.isBlank() || deliveryAddress.isBlank()) {
-                        Toast.makeText(context, "Please fill in all details", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
+                // Place Order Button
+                Button(
+                    onClick = {
+                        if (customerName.isBlank() || customerPhone.isBlank() || deliveryAddress.isBlank()) {
+                            Toast.makeText(context, "Please fill in all details", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
 
-                    isSubmitting = true
-                    val currentMillis = System.currentTimeMillis()
-                    val orderNum = "#SF-2026-${(currentMillis % 9000 + 1000)}"
+                        isSubmitting = true
+                        val currentMillis = System.currentTimeMillis()
+                        val orderNum = "#SF-2026-${(currentMillis % 9000 + 1000)}"
 
-                    val itemsFormatted = if (rawList.isNotEmpty()) {
-                        rawList.mapIndexed { index, item ->
-                            val text = item.toString()
-                            "${index + 1}. $text"
-                        }.joinToString("\n")
-                    } else {
-                        "1. Ordered Food Item x 1"
-                    }
+                        val itemsFormatted = if (rawList.isNotEmpty()) {
+                            rawList.mapIndexed { index, item ->
+                                val text = item.toString()
+                                "${index + 1}. $text"
+                            }.joinToString("\n")
+                        } else {
+                            "1. Ordered Food Item x 1"
+                        }
 
-                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress (Near $landmark)" else deliveryAddress
+                        val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress (Near $landmark)" else deliveryAddress
 
-                    val order = OrderEntity(
-                        orderNumber = orderNum,
-                        customerName = customerName,
-                        customerPhone = customerPhone,
-                        customerAddress = fullAddress,
-                        itemsSummary = itemsFormatted,
-                        subtotal = foodSubtotal,
-                        deliveryFee = deliveryFee,
-                        grandTotal = grandTotal,
-                        deliveryMode = "Home Delivery (+₹$deliveryFee)",
-                        paymentMode = "Cash on Delivery (COD)",
-                        timestamp = currentMillis
-                    )
+                        val order = OrderEntity(
+                            orderNumber = orderNum,
+                            customerName = customerName,
+                            customerPhone = customerPhone,
+                            customerAddress = fullAddress,
+                            itemsSummary = itemsFormatted,
+                            subtotal = foodSubtotal,
+                            deliveryFee = deliveryFee,
+                            grandTotal = grandTotal,
+                            deliveryMode = "Home Delivery (+₹$deliveryFee)",
+                            paymentMode = "Cash on Delivery (COD)",
+                            timestamp = currentMillis
+                        )
 
-                    completedOrder = order
-                    showGoldReceiptDialog = true
-                    isSubmitting = false
-                },
-                enabled = !isSubmitting,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = FlameOrange),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-            ) {
-                if (isSubmitting) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Icon(imageVector = Icons.Default.ShoppingBag, contentDescription = null, tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Generate Royal Gold Bill",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-        }
-    }
-
-    // 🌟 ROYAL GOLD RECEIPT POPUP DIALOG 🌟
-    if (showGoldReceiptDialog && completedOrder != null) {
-        val order = completedOrder!!
-        Dialog(onDismissRequest = { /* Require user to click action */ }) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, RoyalGoldGradient, RoundedCornerShape(22.dp))
-                    .background(DarkGoldGradient, RoundedCornerShape(22.dp))
-                    .padding(20.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        completedOrder = order
+                        showGoldReceipt = true
+                        isSubmitting = false
+                    },
+                    enabled = !isSubmitting,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = FlameOrange),
                     modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    if (isSubmitting) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Icon(imageVector = Icons.Default.ShoppingBag, contentDescription = null, tint = Color.White)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Place Order",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                  
