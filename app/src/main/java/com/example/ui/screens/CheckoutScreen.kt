@@ -432,7 +432,7 @@ private fun sendWhatsAppOrder(
         appendLine("• *Order Reference:* ${order.orderNumber}")
         appendLine("• *Date & Time:* $dateStr")
         appendLine("• *Status:* 🟡 Confirmed / Direct Kitchen Pass")
-        appendLine("⚜️──────────────────────────────────────⚜️")
+        appendLine("⚜️──────────────────────────────────────⚜️️")
         appendLine("👤 *GUEST INFORMATION:*")
         appendLine("  ├ 🏷️ *Name:* ${order.customerName}")
         appendLine("  ├ 📞 *Contact:* ${order.customerPhone}")
@@ -441,4 +441,4 @@ private fun sendWhatsAppOrder(
         appendLine("  └ 🏠 ${order.customerAddress}")
         appendLine("⚜️──────────────────────────────────────⚜️")
         appendLine("🍱 *CHEF'S CURATED ORDER:*")
-  
+ 
