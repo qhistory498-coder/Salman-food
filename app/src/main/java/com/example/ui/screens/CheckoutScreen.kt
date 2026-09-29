@@ -423,21 +423,49 @@ private fun sendWhatsAppOrder(
     val message = StringBuilder().apply {
         appendLine("👑 ══════ •『 SALMAN FOOD VIP 』• ══════ 👑")
         appendLine("           *AUTHENTIC TASTE & ROYAL DINING*")
-        appendLine("⚜️──────────────────────────────────────⚜️")
+        appendLine("═══════════════════════════")
         appendLine("📜 *OFFICIAL INVOICE & ORDER DETAILS*")
         appendLine("• *Order Reference:* ${order.orderNumber}")
         appendLine("• *Date & Time:* $dateStr")
         appendLine("• *Status:* 🟡 Confirmed / Direct Kitchen Pass")
-        appendLine("⚜️──────────────────────────────────────⚜️")
+        appendLine("═══════════════════════════")
         appendLine("👤 *GUEST INFORMATION:*")
-        appendLine("  ├ 🏷️️ *Name:* ${order.customerName}")
+        appendLine("  ├ 🏷️ *Name:* ${order.customerName}")
         appendLine("  ├ 📞 *Contact:* ${order.customerPhone}")
         appendLine("  └ 🚀 *Dispatch Mode:* Priority Express (${selectedKm} KM)")
         appendLine("📍 *DELIVERY DESTINATION:*")
         appendLine("  └ 🏠 ${order.customerAddress}")
-        appendLine("⚜️──────────────────────────────────────⚜️")
+        appendLine("═══════════════════════════")
         appendLine("🍱 *CHEF'S CURATED ORDER:*")
         appendLine(order.itemsSummary)
         if (specialRequest.isNotBlank()) {
             appendLine("")
-            appendLine("?
+            appendLine("👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*")
+               appendLine("  » ❝ $specialRequest ❞")
+        }
+        
+        appendLine("═══════════════════════════")
+        appendLine("💳 *ROYAL BILL SUMMARY*")
+        appendLine("  ├ 🍽️ Culinary Items Total : ₹${order.subtotal}")
+        appendLine("  ├ 🛵 Priority Delivery (${selectedKm} KM) : ₹${order.deliveryFee}")
+        appendLine("  └ ─────────────────────────")
+        appendLine("  👑 *NET PAYABLE: ₹${order.grandTotal}*")
+        appendLine("     (Mode: Cash on Delivery / COD)")
+        appendLine("═══════════════════════════")
+        appendLine("🌟 *SALMAN FOOD GUARANTEE*")
+        appendLine("• 100% Fresh & Authentic Cuisine")
+        appendLine("• Sealed Hygiene & Priority Dispatch")
+        appendLine("═══════════════════════════")
+        appendLine("✨ _Crafted with Passion • Salman Food Official_ ✨")
+    }.toString()
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
+    }
+    try {
+        context.startActivity(intent)
+    } catch (_: Exception) { }
+        }
+}
+
+    
