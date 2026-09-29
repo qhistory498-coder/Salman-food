@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
@@ -45,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -94,6 +96,11 @@ fun CheckoutScreen(
     var address by remember(savedCustomerInfo.address) { mutableStateOf(savedCustomerInfo.address) }
     var landmark by remember(savedCustomerInfo.landmark) { mutableStateOf(savedCustomerInfo.landmark) }
     var notes by remember(savedCustomerInfo.notes) { mutableStateOf(savedCustomerInfo.notes) }
+
+    // Distance selection: 1 KM = ₹10, 2 KM = ₹20, 3 KM = ₹30
+    var selectedDistanceKm by remember { mutableIntStateOf(1) }
+    val deliveryFee = if (deliveryMode == DeliveryMode.HOME_DELIVERY) selectedDistanceKm * 10 else 0
+    val finalPayableAmount = grandTotal + deliveryFee
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isSubmitting by remember { mutableStateOf(false) }
@@ -147,7 +154,7 @@ fun CheckoutScreen(
                             },
                             label = { Text("Your Full Name *", color = TextSecondary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Person, contentDescription = null, tint = FlameOrange)
+                                Icon(Icons.Default.Person, contentDescription = null, tint = FlameOrange)
                             },
                             singleLine = true,
                             colors = getTextFieldColors(),
@@ -167,7 +174,7 @@ fun CheckoutScreen(
                             label = { Text("Phone Number (10 Digits) *", color = TextSecondary) },
                             placeholder = { Text("e.g. 9876543210", color = TextSecondary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Phone, contentDescription = null, tint = FlameOrange)
+                                Icon(Icons.Default.Phone, contentDescription = null, tint = FlameOrange)
                             },
                             prefix = { Text("+91 ", color = TextPrimary, fontWeight = FontWeight.Bold) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -181,11 +188,11 @@ fun CheckoutScreen(
                 }
             }
 
-            // Delivery Address (for Home Delivery)
+            // Delivery Address & Distance (for Home Delivery)
             if (deliveryMode == DeliveryMode.HOME_DELIVERY) {
                 item {
                     Text(
-                        text = "Delivery Address (within 3 KM)",
+                        text = "Delivery Address & Distance",
                         color = TextPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -210,9 +217,9 @@ fun CheckoutScreen(
                                     errorMessage = null
                                 },
                                 label = { Text("Complete Street Address *", color = TextSecondary) },
-                                placeholder = { Text("House/Flat No., Building name, Street", color = TextSecondary) },
+                                placeholder = { Text("House/Flat No., Street, Area", color = TextSecondary) },
                                 leadingIcon = {
-                                    Icon(Icons.Filled.Home, contentDescription = null, tint = GoldenYellow)
+                                    Icon(Icons.Default.Home, contentDescription = null, tint = GoldenYellow)
                                 },
                                 minLines = 2,
                                 maxLines = 4,
@@ -228,7 +235,7 @@ fun CheckoutScreen(
                                 label = { Text("Nearby Landmark (Optional)", color = TextSecondary) },
                                 placeholder = { Text("e.g. Near Mosque / Petrol Pump", color = TextSecondary) },
                                 leadingIcon = {
-                                    Icon(Icons.Filled.LocationOn, contentDescription = null, tint = GoldenYellow)
+                                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = GoldenYellow)
                                 },
                                 singleLine = true,
                                 colors = getTextFieldColors(),
@@ -236,12 +243,57 @@ fun CheckoutScreen(
                                     .fillMaxWidth()
                                     .testTag("checkout_input_landmark")
                             )
+
+                            // Distance Selector (1 km, 2 km, 3 km)
+                            Text(
+                                text = "Select Distance from Salman Food:",
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(1 to 10, 2 to 20, 3 to 30).forEach { (km, charge) ->
+                                    val isSelected = selectedDistanceKm == km
+                                    Surface(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable { selectedDistanceKm = km },
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = if (isSelected) FlameOrange.copy(alpha = 0.2f) else CharcoalSurface,
+                                        border = BorderStroke(
+                                            1.dp,
+                                            if (isSelected) FlameOrange else CharcoalSurfaceVariant
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "$km KM",
+                                                color = if (isSelected) FlameOrange else TextPrimary,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 13.sp
+                                            )
+                                            Text(
+                                                text = "₹$charge Fee",
+                                                color = TextSecondary,
+                                                fontSize = 11.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            // Cooking / Special Request Notes
+            // Special Instructions
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -254,9 +306,9 @@ fun CheckoutScreen(
                             value = notes,
                             onValueChange = { notes = it },
                             label = { Text("Cooking / Delivery Notes (Optional)", color = TextSecondary) },
-                            placeholder = { Text("e.g. Extra spicy, green chutney, less oil", color = TextSecondary) },
+                            placeholder = { Text("e.g. Extra spicy, less oil, green chutney", color = TextSecondary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Notes, contentDescription = null, tint = TextSecondary)
+                                Icon(Icons.Default.Notes, contentDescription = null, tint = TextSecondary)
                             },
                             singleLine = true,
                             colors = getTextFieldColors(),
@@ -268,7 +320,7 @@ fun CheckoutScreen(
                 }
             }
 
-            // Payment Options
+            // Payment Mode Selection
             item {
                 Text(
                     text = "Payment Method",
@@ -289,11 +341,10 @@ fun CheckoutScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // UPI Option
                         PaymentMethodRow(
                             title = "UPI / PhonePe",
-                            subtitle = "Pay directly to 7033680705@ybl",
-                            icon = Icons.Filled.ElectricBolt,
+                            subtitle = "Pay directly to shop UPI",
+                            icon = Icons.Default.ElectricBolt,
                             iconTint = GoldenYellow,
                             badgeText = "Fast & Instant",
                             badgeColor = PhonePePurple,
@@ -302,11 +353,10 @@ fun CheckoutScreen(
                             testTag = "pay_method_upi"
                         )
 
-                        // Cash on Delivery Option
                         PaymentMethodRow(
                             title = "Cash on Delivery (COD)",
                             subtitle = "Pay cash when receiving your food",
-                            icon = Icons.Filled.AccountBalanceWallet,
+                            icon = Icons.Default.AccountBalanceWallet,
                             iconTint = FlameOrange,
                             badgeText = "Cash",
                             badgeColor = FlameOrange,
@@ -318,7 +368,7 @@ fun CheckoutScreen(
                 }
             }
 
-            // Error display
+            // Error Display
             if (errorMessage != null) {
                 item {
                     Surface(
@@ -338,11 +388,10 @@ fun CheckoutScreen(
                 }
             }
 
-            // Place Order & Dispatch Button
+            // Place Order Button with Dynamic Amount
             item {
                 Button(
                     onClick = {
-                        // Form validations
                         if (name.trim().isBlank()) {
                             errorMessage = "Please enter your name"
                             return@Button
@@ -358,150 +407,15 @@ fun CheckoutScreen(
 
                         errorMessage = null
                         isSubmitting = true
-                        viewModel.updateCustomerInfo(name.trim(), phone.trim(), address.trim(), landmark.trim(), notes.trim())
+                        
+                        val finalNoteWithKm = if (deliveryMode == DeliveryMode.HOME_DELIVERY) {
+                            "${notes.trim()} | [Distance: ${selectedDistanceKm} KM, Delivery Charge: Rs.$deliveryFee]".trim()
+                        } else {
+                            notes.trim()
+                        }
+
+                        viewModel.updateCustomerInfo(name.trim(), phone.trim(), address.trim(), landmark.trim(), finalNoteWithKm)
 
                         if (activity != null) {
                             viewModel.placeOrder(activity) { order, receipt ->
-                                isSubmitting = false
-                                // Automatically open WhatsApp with order receipt!
-                                OrderDispatcher.sendOrderToWhatsApp(context, receipt)
-                                onOrderSuccess(order, receipt)
-                            }
-                        }
-                    },
-                    enabled = !isSubmitting,
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = WhatsAppGreen,
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .testTag("place_order_whatsapp_btn")
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Send,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (isSubmitting) "Placing Order..." else "Place Order & Send to WhatsApp (₹$grandTotal)",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-                }
-            }
-        }
-
-        // Sticky AdMob Banner at bottom
-        StickyBannerAd()
-    }
-}
-
-@Composable
-private fun PaymentMethodRow(
-    title: String,
-    subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    iconTint: Color,
-    badgeText: String,
-    badgeColor: Color,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    testTag: String
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .testTag(testTag),
-        shape = RoundedCornerShape(10.dp),
-        color = if (isSelected) FlameOrange.copy(alpha = 0.12f) else CharcoalSurface,
-        border = BorderStroke(
-            1.dp,
-            if (isSelected) FlameOrange else CharcoalSurfaceVariant
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = isSelected,
-                onClick = onClick,
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = FlameOrange,
-                    unselectedColor = TextSecondary
-                )
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Surface(
-                shape = CircleShape,
-                color = CharcoalDark,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = title,
-                        color = TextPrimary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = badgeColor.copy(alpha = 0.2f)
-                    ) {
-                        Text(
-                            text = badgeText,
-                            color = badgeColor,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
-                        )
-                    }
-                }
-                Text(
-                    text = subtitle,
-                    color = TextSecondary,
-                    fontSize = 11.sp
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun getTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedContainerColor = CharcoalSurface,
-    unfocusedContainerColor = CharcoalSurface,
-    focusedBorderColor = FlameOrange,
-    unfocusedBorderColor = CharcoalSurfaceVariant,
-    focusedTextColor = TextPrimary,
-    unfocusedTextColor = TextPrimary,
-    cursorColor = FlameOrange
-)
+                                isSubmitting =
