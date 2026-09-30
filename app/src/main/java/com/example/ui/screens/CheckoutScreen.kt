@@ -411,6 +411,7 @@ fun CheckoutScreen(
         }
     }
 }
+
 private fun sendWhatsAppOrder(
     context: Context,
     order: OrderEntity,
@@ -440,31 +441,4 @@ private fun sendWhatsAppOrder(
         if (specialRequest.isNotBlank()) {
             appendLine("")
             appendLine("👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*")
-            appendLine("  » ❝ $specialRequest ❞")
-        }
-        appendLine("═══════════════════════════")
-        appendLine("💳 *ROYAL BILL SUMMARY*")
-        appendLine("  ├ 🍽️ Culinary Items Total : ₹${order.subtotal}")
-        appendLine("  ├ 🛵 Priority Delivery (${selectedKm} KM) : ₹${order.deliveryFee}")
-        appendLine("  └ ─────────────────────────")
-        appendLine("  👑 *NET PAYABLE: ₹${order.grandTotal}*")
-        appendLine("     (Mode: Cash on Delivery / COD)")
-        appendLine("═══════════════════════════")
-        appendLine("🌟 *SALMAN FOOD GUARANTEE*")
-        appendLine("• 100% Fresh & Authentic Cuisine")
-        appendLine("• Sealed Hygiene & Priority Dispatch")
-        appendLine("═══════════════════════════")
-        appendLine("✨ _Crafted with Passion • Salman Food Official_ ✨")
-    }.toString()
-
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
-    }
-    try {
-        context.startActivity(intent)
-    } catch (_: Exception) { }
-}
-    }
-    }
-}
-
+       
