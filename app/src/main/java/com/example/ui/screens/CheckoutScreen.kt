@@ -252,7 +252,7 @@ fun CheckoutScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = enlargementSpacerHeight())
                     Text(
                         text = "Salman Food Delivery: ₹10 per Kilometer",
                         color = TextSecondary,
@@ -414,6 +414,8 @@ fun CheckoutScreen(
     }
 }
 
+private fun enlargementSpacerHeight() = 6.dp
+
 private fun sendWhatsAppOrder(
     context: Context,
     order: OrderEntity,
@@ -422,7 +424,7 @@ private fun sendWhatsAppOrder(
 ) {
     val dateStr = SimpleDateFormat("dd MMM yyyy | hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
 
-    val sb = StringBuilder()
+    val sb = java.lang.StringBuilder()
     sb.append("👑 ══════ •『 SALMAN FOOD VIP 』• ══════ 👑\n")
     sb.append("           *AUTHENTIC TASTE & ROYAL DINING*\n")
     sb.append("═══════════════════════════\n")
@@ -439,5 +441,29 @@ private fun sendWhatsAppOrder(
     sb.append("  └ 🏠 ").append(order.customerAddress).append("\n")
     sb.append("═══════════════════════════\n")
     sb.append("🍱 *CHEF'S CURATED ORDER:*\n")
-    sb.append(order.itemsSummary).append("\n")
-    if (special
+      if (specialRequest.isNotBlank()) {
+        sb.append("\n👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*\n")
+        sb.append("  » ❝ ").append(specialRequest).append(" ❞\n")
+    }
+    sb.append("═══════════════════════════\n")
+    sb.append("💳 *ROYAL BILL SUMMARY*\n")
+    sb.append("  ├ 🍽️️ Culinary Items Total : ₹").append(order.subtotal).append("\n")
+    sb.append("  ├ 🛵 Priority Delivery (").append(selectedKm).append(" KM) : ₹").append(order.deliveryFee).append("\n")
+    sb.append("  └ ─────────────────────────\n")
+    sb.append("  👑 *NET PAYABLE: ₹").append(order.grandTotal).append("*\n")
+    sb.append("     (Mode: Cash on Delivery / COD)\n")
+    sb.append("═══════════════════════════\n")
+    sb.append("🌟 *SALMAN FOOD GUARANTEE*")
+    sb.append("\n• 100% Fresh & Authentic Cuisine\n")
+    sb.append("• Sealed Hygiene & Priority Dispatch\n")
+    sb.append("═══════════════════════════\n")
+    sb.append("✨ _Crafted with Passion • Salman Food Official_ ✨\n")
+
+    val message = sb.toString()
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
+    }
+    try {
+        context.startActivity(intent)
+    } catch (_: Exception) { }
+}
