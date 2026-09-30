@@ -32,6 +32,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -69,6 +70,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
     viewModel: FoodOrderViewModel,
@@ -363,17 +365,19 @@ fun CheckoutScreen(
                     val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress (Near $landmark)" else deliveryAddress
 
                     val order = OrderEntity(
+                        id = 0,
                         orderNumber = orderNum,
-                        customerName = customerName,
-                        customerPhone = customerPhone,
-                        customerAddress = fullAddress,
+                        timestamp = currentMillis,
                         itemsSummary = itemsFormatted,
                         subtotal = foodSubtotal,
                         deliveryFee = deliveryFee,
                         grandTotal = grandTotal,
                         deliveryMode = "Home Delivery (+₹$deliveryFee)",
+                        customerName = customerName,
+                        customerPhone = customerPhone,
+                        customerAddress = fullAddress,
                         paymentMode = "Cash on Delivery (COD)",
-                        timestamp = currentMillis
+                        status = "Placed"
                     )
 
                     sendWhatsAppOrder(
@@ -418,27 +422,22 @@ private fun sendWhatsAppOrder(
 ) {
     val dateStr = SimpleDateFormat("dd MMM yyyy | hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
 
-    val message = StringBuilder().apply {
-        appendLine("👑 ══════ •『 SALMAN FOOD VIP 』• ══════ 👑")
-        appendLine("           *AUTHENTIC TASTE & ROYAL DINING*")
-        appendLine("═══════════════════════════")
-        appendLine("📜 *OFFICIAL INVOICE & ORDER DETAILS*")
-        appendLine("• *Order Reference:* ${order.orderNumber}")
-        appendLine("• *Date & Time:* $dateStr")
-        appendLine("• *Status:* 🟡 Confirmed / Direct Kitchen Pass")
-        appendLine("═══════════════════════════")
-        appendLine("👤 *GUEST INFORMATION:*")
-        appendLine("  ├ 🏷️ *Name:* ${order.customerName}")
-        appendLine("  ├ 📞 *Contact:* ${order.customerPhone}")
-        appendLine("  └ 🚀 *Dispatch Mode:* Priority Express (${selectedKm} KM)")
-        appendLine("📍 *DELIVERY DESTINATION:*")
-        appendLine("  └ 🏠 ${order.customerAddress}")
-        appendLine("═══════════════════════════")
-        appendLine("🍱 *CHEF'S CURATED ORDER:*")
-        appendLine(order.itemsSummary)
-        if (specialRequest.isNotBlank()) {
-            appendLine("")
-            appendLine("👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*")
-            appendLine("  » ❝ $specialRequest ❞")
-        }
-        appendLine("══════════════════════════
+    val sb = StringBuilder()
+    sb.append("👑 ══════ •『 SALMAN FOOD VIP 』• ══════ 👑\n")
+    sb.append("           *AUTHENTIC TASTE & ROYAL DINING*\n")
+    sb.append("═══════════════════════════\n")
+    sb.append("📜 *OFFICIAL INVOICE & ORDER DETAILS*\n")
+    sb.append("• *Order Reference:* ").append(order.orderNumber).append("\n")
+    sb.append("• *Date & Time:* ").append(dateStr).append("\n")
+    sb.append("• *Status:* 🟡 Confirmed / Direct Kitchen Pass\n")
+    sb.append("═══════════════════════════\n")
+    sb.append("👤 *GUEST INFORMATION:*\n")
+    sb.append("  ├ 🏷️ *Name:* ").append(order.customerName).append("\n")
+    sb.append("  ├ 📞 *Contact:* ").append(order.customerPhone).append("\n")
+    sb.append("  └ 🚀 *Dispatch Mode:* Priority Express (").append(selectedKm).append(" KM)\n")
+    sb.append("📍 *DELIVERY DESTINATION:*\n")
+    sb.append("  └ 🏠 ").append(order.customerAddress).append("\n")
+    sb.append("═══════════════════════════\n")
+    sb.append("🍱 *CHEF'S CURATED ORDER:*\n")
+    sb.append(order.itemsSummary).append("\n")
+    if (special
