@@ -12,12 +12,16 @@ android {
     namespace = "com.example"
     compileSdk { version = release(36) { minorApiLevel = 1 } }
 
+        val autoVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull() ?: 2
+    val autoVersionName = "1.$autoVersionCode"
+
     defaultConfig {
-        applicationId = "com.aistudio.salmanfood.sfxyz"
+        applicationId = "com.aistudio.salmanfood.sfxz"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = autoVersionCode
+        versionName = autoVersionName
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
