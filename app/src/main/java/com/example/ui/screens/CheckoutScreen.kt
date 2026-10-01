@@ -141,6 +141,7 @@ fun CheckoutScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
@@ -224,7 +225,6 @@ fun CheckoutScreen(
                         onValueChange = { specialInstructions = it },
                         label = { Text("Special Request (e.g. less oil, extra spicy)") },
                         leadingIcon = { Icon(Icons.Default.EditNote, contentDescription = null, tint = FlameOrange) },
-                        singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = FlameOrange,
                             unfocusedBorderColor = CharcoalSurfaceVariant,
@@ -252,7 +252,7 @@ fun CheckoutScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Salman Food Delivery: ₹10 per Kilometer",
                         color = TextSecondary,
@@ -310,13 +310,14 @@ fun CheckoutScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
+
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Delivery Fee ($selectedDistanceKm KM)", color = TextSecondary, fontSize = 14.sp)
+                        Text(text = "Delivery Fee (${selectedDistanceKm} KM)", color = TextSecondary, fontSize = 14.sp)
                         Text(text = "₹$deliveryFee", color = GoldenYellow, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     }
 
@@ -359,10 +360,10 @@ fun CheckoutScreen(
                             "${index + 1}. $text"
                         }.joinToString("\n")
                     } else {
-                        "1. Ordered Food Item x 1"
+                        "1. Veg Chowmein (Half) x 1 = ₹40"
                     }
 
-                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress (Near $landmark)" else deliveryAddress
+                    val fullAddress = if (landmark.isNotBlank()) "$deliveryAddress, Landmark: $landmark" else deliveryAddress
 
                     val order = OrderEntity(
                         id = 0,
@@ -411,12 +412,9 @@ fun CheckoutScreen(
                 }
             }
         }
-    )
- }
 }
 
- private fun sendWhatsAppOrder(
-     
+private fun sendWhatsAppOrder(
     context: Context,
     order: OrderEntity,
     selectedKm: Int,
@@ -443,21 +441,4 @@ fun CheckoutScreen(
     sb.append("• Item Subtotal: ₹").append(order.subtotal).append("\n")
     sb.append("• Delivery Charge: ₹").append(order.deliveryFee).append("\n")
     sb.append("• Grand Total: ₹").append(order.grandTotal).append("\n\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("💳 Payment Mode: Cash on Delivery (COD)\n")
-    if (specialRequest.isNotBlank()) {
-        sb.append("📝 Special Request: ").append(specialRequest).append("\n")
-    }
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n\n")
-    sb.append("_Sent via Salman Food Mobile App_")
-
-    val message = sb.toString()
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse("https://api.whatsapp.com/send?phone=918409762283&text=" + Uri.encode(message))
-    }
-    try {
-        context.startActivity(intent)
-    } catch (e: Exception) {
-        android.widget.Toast.makeText(context, "WhatsApp not installed", android.widget.Toast.LENGTH_SHORT).show()
-    }
-}
+ 
