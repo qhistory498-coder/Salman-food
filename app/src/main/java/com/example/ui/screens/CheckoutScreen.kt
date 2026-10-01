@@ -420,48 +420,46 @@ private fun sendWhatsAppOrder(
     selectedKm: Int,
     specialRequest: String
 ) {
-    val dateStr = SimpleDateFormat("dd MMM yyyy | hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
+    val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
 
-    val sb = StringBuilder()
-    sb.append("👑 ══════ •『 SALMAN FOOD VIP 』• ══════ 👑\n")
-    sb.append("           *AUTHENTIC TASTE & ROYAL DINING*\n")
-    sb.append("═══════════════════════════\n")
-    sb.append("📜 *OFFICIAL INVOICE & ORDER DETAILS*\n")
-    sb.append("• *Order Reference:* ").append(order.orderNumber).append("\n")
-    sb.append("• *Date & Time:* ").append(dateStr).append("\n")
-    sb.append("• *Status:* 🟡 Confirmed / Direct Kitchen Pass\n")
-    sb.append("═══════════════════════════\n")
-    sb.append("👤 *GUEST INFORMATION:*\n")
-    sb.append("  ├ 🏷️ *Name:* ").append(order.customerName).append("\n")
-    sb.append("  ├ 📞 *Contact:* ").append(order.customerPhone).append("\n")
-    sb.append("  └ 🚀 *Dispatch Mode:* Priority Express (").append(selectedKm).append(" KM)\n")
-    sb.append("📍 *DELIVERY DESTINATION:*\n")
-    sb.append("  └ 🏠 ").append(order.customerAddress).append("\n")
-    sb.append("═══════════════════════════\n")
-    sb.append("🍱 *CHEF'S CURATED ORDER:*\n")
-    sb.append(order.itemsSummary).append("\n")
-        if (specialRequest.isNotBlank()) {
-        sb.append("\n👨‍🍳 *SPECIAL KITCHEN INSTRUCTIONS:*\n")
-        sb.append("  » ❝ ").append(specialRequest).append(" ❞\n")
+    val sb = java.lang.StringBuilder()
+    sb.append("🔥 NEW ORDER - SALMAN FOOD (सलमान फ़ूड) 🔥\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n\n")
+    sb.append("📋 Order ID: ").append(order.orderNumber).append("\n")
+    sb.append("🕒 Time: ").append(dateStr).append("\n\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("👤 Customer Details:\n")
+    sb.append("• Name: ").append(order.customerName).append("\n")
+    sb.append("• Phone: ").append(order.customerPhone).append("\n")
+    sb.append("• Mode: Home Delivery (+₹").append(order.deliveryFee).append(")\n")
+    sb.append("📍 Delivery Address:\n").append(order.customerAddress).append("\n\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("🍱 Ordered Items:\n")
+    sb.append(order.itemsSummary).append("\n\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("💵 Bill Details:\n")
+    sb.append("• Item Subtotal: ₹").append(order.subtotal).append("\n")
+    sb.append("• Delivery Charge: ₹").append(order.deliveryFee).append("\n")
+    sb.append("• Grand Total: ₹").append(order.grandTotal).append("\n\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("💳 Payment Mode: Cash on Delivery (COD)\n")
+    if (specialRequest.isNotBlank()) {
+        sb.append("📝 Special Request: ").append(specialRequest).append("\n")
     }
-    sb.append("═══════════════════════════\n")
-    sb.append("💳 *ROYAL BILL SUMMARY*\n")
-    sb.append("  ├ 🍽️ Culinary Items Total : ₹").append(order.subtotal).append("\n")
-    sb.append("  ├ 🛵 Priority Delivery (").append(selectedKm).append(" KM) : ₹").append(order.deliveryFee).append("\n")
-    sb.append("  └ ─────────────────────────\n")
-    sb.append("  👑 *NET PAYABLE: ₹").append(order.grandTotal).append("*\n")
-    sb.append("     (Mode: Cash on Delivery / COD)\n")
-    sb.append("═══════════════════════════\n")
-    sb.append("🌟 *SALMAN FOOD GUARANTEE*")
-    sb.append("\n• 100% Fresh & Authentic Cuisine\n")
-    sb.append("• Sealed Hygiene & Priority Dispatch\n")
-    sb.append("═══════════════════════════\n")
-    sb.append("✨ _Crafted with Passion • Salman Food Official_ ✨\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n\n")
+    sb.append("_Sent via Salman Food Mobile App_")
 
     val message = sb.toString()
     val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
+        data = Uri.parse("https://api.whatsapp.com/send?phone=918409762283&text=" + Uri.encode(message))
     }
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        android.widget.Toast.makeText(context, "WhatsApp not installed", android.widget.Toast.LENGTH_SHORT).show()
+    }
+}
+
     try {
         context.startActivity(intent)
     } catch (_: Exception) { }
