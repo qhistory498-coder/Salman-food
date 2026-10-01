@@ -34,8 +34,8 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.data.local.OrderEntity
 import com.example.ui.screens.CartScreen
 import com.example.ui.screens.CheckoutScreen
+import com.example.ui.screens.HistoryScreen
 import com.example.ui.screens.MenuScreen
-import com.example.ui.screens.OrderHistoryScreen
 import com.example.ui.screens.OrderSuccessScreen
 import com.example.ui.screens.SplashScreen
 import com.example.ui.theme.CharcoalDark
@@ -121,12 +121,12 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                     }
                 }
             } catch (_: Exception) {
-                // इंटरनेट न होने पर सामान्य रूप से ऐप चलता रहेगा
+                // इंटरनेट न होने या कोई समस्या होने पर ऐप सामान्य चलता रहेगा
             }
         }
     }
 
-    // ग्राहक के सामने दिखने वाला अपडेट पॉप-अप बॉक्स
+    // ग्राहक के सामने दिखने वाला अपडेट डायलॉग बॉक्स
     if (showUpdateDialog) {
         AlertDialog(
             onDismissRequest = { showUpdateDialog = false },
@@ -230,7 +230,7 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                 }
 
                 is AppScreen.History -> {
-                    OrderHistoryScreen(
+                    HistoryScreen(
                         viewModel = viewModel,
                         onNavigateBack = {
                             if (screenStack.size > 1) screenStack.removeAt(screenStack.lastIndex)
@@ -241,4 +241,3 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
         }
     }
 }
-
