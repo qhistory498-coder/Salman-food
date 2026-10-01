@@ -238,7 +238,7 @@ fun CheckoutScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -252,6 +252,7 @@ fun CheckoutScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
+
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Salman Food Delivery: ₹10 per Kilometer",
@@ -296,7 +297,7 @@ fun CheckoutScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -352,7 +353,7 @@ fun CheckoutScreen(
 
                     isSubmitting = true
                     val currentMillis = System.currentTimeMillis()
-                    val orderNum = "#SF-2026-${(currentMillis % 9000 + 1000)}"
+                    val orderNum = "SF-2026-${(currentMillis % 9000 + 1000)}"
 
                     val itemsFormatted = if (rawList.isNotEmpty()) {
                         rawList.mapIndexed { index, item ->
@@ -407,17 +408,15 @@ fun CheckoutScreen(
                         text = "Place Order on WhatsApp",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                                                                    color = Color.White
-                     )
-                 }
-             }
-         }
-     }
- }
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
 
- private fun sendWhatsAppOrder(
-
-    
+private fun sendWhatsAppOrder(
     context: Context,
     order: OrderEntity,
     selectedKm: Int,
@@ -427,7 +426,7 @@ fun CheckoutScreen(
 
     val sb = java.lang.StringBuilder()
     sb.append("🔥 NEW ORDER - SALMAN FOOD (सलमान फ़ूड) 🔥\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     sb.append("📋 Order ID: ").append(order.orderNumber).append("\n")
     sb.append("🕒 Time: ").append(dateStr).append("\n\n")
     sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
@@ -437,11 +436,37 @@ fun CheckoutScreen(
     sb.append("• Mode: Home Delivery (+₹").append(order.deliveryFee).append(")\n")
     sb.append("📍 Delivery Address:\n").append(order.customerAddress).append("\n\n")
     sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("🍱 Ordered Items:\n")
+    sb.append("🍽️ Ordered Items:\n")
     sb.append(order.itemsSummary).append("\n\n")
     sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     sb.append("💵 Bill Details:\n")
     sb.append("• Item Subtotal: ₹").append(order.subtotal).append("\n")
     sb.append("• Delivery Charge: ₹").append(order.deliveryFee).append("\n")
-    sb.append("• Grand Total: ₹").append(order.grandTotal).append("\n\n")
- 
+    sb.append("• Grand Total: ₹").append(order.grandTotal).append("\n")
+val special = specialRequest.trim()
+    if (special.isNotEmpty()) {
+        sb.append("• Note: ").append(special).append("\n")
+    }
+
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("💳 Payment: Cash on Delivery (COD)\n")
+    sb.append("📌 Status: Placed\n")
+    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    sb.append("Salman Food App se bheja gaya order ✅")
+
+    val message = sb.toString()
+    val encodedMessage = Uri.encode(message)
+    val whatsappUrl = "https://api.whatsapp.com/send?phone=919631720803&text=$encodedMessage"
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(whatsappUrl)
+        setPackage("com.whatsapp")
+    }
+
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+    }
+}
+   
