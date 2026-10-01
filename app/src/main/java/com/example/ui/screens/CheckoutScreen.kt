@@ -424,49 +424,48 @@ private fun sendWhatsAppOrder(
 ) {
     val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(order.timestamp))
 
-    val sb = java.lang.StringBuilder()
-    sb.append("🔥 NEW ORDER - SALMAN FOOD (सलमान फ़ूड) 🔥\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("📋 Order ID: ").append(order.orderNumber).append("\n")
-    sb.append("🕒 Time: ").append(dateStr).append("\n\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("👤 Customer Details:\n")
-    sb.append("• Name: ").append(order.customerName).append("\n")
-    sb.append("• Phone: ").append(order.customerPhone).append("\n")
-    sb.append("• Mode: Home Delivery (+₹").append(order.deliveryFee).append(")\n")
-    sb.append("📍 Delivery Address:\n").append(order.customerAddress).append("\n\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("🍽️ Ordered Items:\n")
-    sb.append(order.itemsSummary).append("\n\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("💵 Bill Details:\n")
-    sb.append("• Item Subtotal: ₹").append(order.subtotal).append("\n")
-    sb.append("• Delivery Charge: ₹").append(order.deliveryFee).append("\n")
-    sb.append("• Grand Total: ₹").append(order.grandTotal).append("\n")
-val special = specialRequest.trim()
-    if (special.isNotEmpty()) {
-        sb.append("• Note: ").append(special).append("\n")
-    }
+    val message = """
+🔥 *NEW ORDER - SALMAN FOOD (सलमान फ़ूड)* 🔥
+━━━━━━━━━━━━━━━━━━━━
+🆔 *Order ID:* ${order.orderNumber}
+🕒 *Time:* $dateStr
 
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("💳 Payment: Cash on Delivery (COD)\n")
-    sb.append("📌 Status: Placed\n")
-    sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    sb.append("Salman Food App se bheja gaya order ✅")
-
-    val message = sb.toString()
-    val encodedMessage = Uri.encode(message)
-    val whatsappUrl = "https://api.whatsapp.com/send?phone=919631720803&text=$encodedMessage"
-
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse(whatsappUrl)
-        setPackage("com.whatsapp")
-    }
+👤 *Customer Details:*
+• *Name:* ${order.customerName}
+• *Phone:* ${order.customerPhone}
+• *Mode:* Home Delivery (₹${order.deliveryFee})
+📍 *Delivery Address:* ${order.customerAddress}
+━━━━━━━━━━━━━━━━━━━━
+🛒 *Ordered Items:*
+${order.itemsSummary}
+━━━━━━━━━━━━━━━━━━━━
+💰 *Bill Details:*
+• *Item Subtotal:* ₹${order.subtotal}
+• *Delivery Charge:* ₹${order.deliveryFee}
+• *Grand Total:* ₹${order.grandTotal}
+${if (specialRequest.trim().isNotEmpty()) "📝 *Note:* ${specialRequest.trim()}\n" else ""}
+━━━━━━━━━━━━━━━━━━━━
+💵 *Payment:* Cash on Delivery (COD)
+📦 *Status:* Placed
+━━━━━━━━━━━━━━━━━━━━
+_Salman Food App se bheja gaya order ✅_
+    """.trimIndent()
 
     try {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, message)
+            putExtra("jid", "919631720803@s.whatsapp.net")
+            setPackage("com.whatsapp")
+        }
         context.startActivity(intent)
-    } catch (e: Exception) {
-        Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+    } catch (_: Exception) {
+        try {
+            val fallbackUrl = "https://api.whatsapp.com/send?phone=919631720803&text=" + Uri.encode(message)
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl))
+            context.startActivity(fallbackIntent)
+        } catch (_: Exception) {
+            Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+        }
     }
 }
-   
