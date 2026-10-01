@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.data.local.OrderEntity
 import com.example.ui.screens.CartScreen
 import com.example.ui.screens.CheckoutScreen
-import com.example.ui.screens.HistoryScreen
 import com.example.ui.screens.MenuScreen
 import com.example.ui.screens.OrderSuccessScreen
 import com.example.ui.screens.SplashScreen
@@ -121,12 +120,12 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                     }
                 }
             } catch (_: Exception) {
-                // इंटरनेट न होने या कोई समस्या होने पर ऐप सामान्य चलता रहेगा
+                // इंटरनेट न होने या API एरर आने पर ऐप चुपचाप चलता रहेगा
             }
         }
     }
 
-    // ग्राहक के सामने दिखने वाला अपडेट डायलॉग बॉक्स
+    // ग्राहक के सामने दिखने वाला अपडेट पॉप-अप बॉक्स
     if (showUpdateDialog) {
         AlertDialog(
             onDismissRequest = { showUpdateDialog = false },
@@ -135,7 +134,7 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
             },
             text = {
                 Text(
-                    text = "नया वर्शन ($latestVersionName) आ चुका है। नए फीचर्स, नए मेन्यू और बेहतर स्पीड के लिए अभी अपडेट करें।",
+                    text = "नया वर्शन ($latestVersionName) आ चुका है। नए फ़ीचर्स और बेहतर स्पीड के लिए अभी अपडेट करें।",
                     color = Color.LightGray
                 )
             },
@@ -230,11 +229,12 @@ fun SalmanFoodApp(viewModel: FoodOrderViewModel) {
                 }
 
                 is AppScreen.History -> {
-                    HistoryScreen(
+                    CartScreen(
                         viewModel = viewModel,
                         onNavigateBack = {
                             if (screenStack.size > 1) screenStack.removeAt(screenStack.lastIndex)
-                        }
+                        },
+                        onProceedToCheckout = { screenStack.add(AppScreen.Checkout) }
                     )
                 }
             }
