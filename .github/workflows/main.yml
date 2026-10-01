@@ -8,8 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -18,23 +19,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Keystore and Dummy Config
+      - name: Create Permanent Keystore
         run: |
-          mkdir -p ~/.android app Salman-food/app
-          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android" -keyalg RSA -keysize 2048 -validity 10000
-          cp ~/.android/debug.keystore debug.keystore
-          cp ~/.android/debug.keystore app/debug.keystore 2>/dev/null || true
-          cp ~/.android/debug.keystore Salman-food/debug.keystore 2>/dev/null || true
-          
-          # Google Services plugin checking disable karein
+          mkdir -p app
+          keytool -genkey -v -keystore app/salman_food.jks \
+            -alias salmanfood \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass "SalmanFood@2026" -keypass "SalmanFood@2026" \
+            -dname "CN=SalmanFood, OU=App, O=SalmanFood, L=City, S=State, C=IN"
+
+      - name: Disable Google Services Plugin Check
+        run: |
           sed -i '/com.google.gms.google-services/d' app/build.gradle.kts 2>/dev/null || true
-          sed -i '/com.google.gms:google-services/d' build.gradle.kts 2>/dev/null || true
+          sed -i '/com.google.gms.google-services/d' build.gradle.kts 2>/dev/null || true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build APK
-        run: gradle assembleDebug -x processDebugGoogleServices --stacktrace --no-daemon
+        run: ./gradlew assembleDebug -x processDebugGoogleServices --stacktrace --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
