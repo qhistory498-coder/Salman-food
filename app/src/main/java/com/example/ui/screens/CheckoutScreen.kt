@@ -407,14 +407,17 @@ fun CheckoutScreen(
                         text = "Place Order on WhatsApp",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-        }
-}
+                                                                    color = Color.White
+                     )
+                 }
+             }
+         }
+     }
+ }
 
-private fun sendWhatsAppOrder(
+ private fun sendWhatsAppOrder(
+
+    
     context: Context,
     order: OrderEntity,
     selectedKm: Int,
