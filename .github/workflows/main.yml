@@ -19,6 +19,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Prepare Keystore and Dummy Config
+        run: |
+          mkdir -p ~/.android app Salman-food/app
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          cp ~/.android/debug.keystore debug.keystore
+          cp ~/.android/debug.keystore app/debug.keystore 2>/dev/null || true
+          cp ~/.android/debug.keystore Salman-food/debug.keystore 2>/dev/null || true
+
       - name: Disable Google Services Plugin Check
         run: |
           sed -i '/com.google.gms.google-services/d' app/build.gradle.kts 2>/dev/null || true
