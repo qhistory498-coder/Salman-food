@@ -411,10 +411,12 @@ fun CheckoutScreen(
                 }
             }
         }
-    }
+    )
+ }
 }
 
-private fun sendWhatsAppOrder(
+ private fun sendWhatsAppOrder(
+     
     context: Context,
     order: OrderEntity,
     selectedKm: Int,
@@ -458,9 +460,4 @@ private fun sendWhatsAppOrder(
     } catch (e: Exception) {
         android.widget.Toast.makeText(context, "WhatsApp not installed", android.widget.Toast.LENGTH_SHORT).show()
     }
-}
-
-    try {
-        context.startActivity(intent)
-    } catch (_: Exception) { }
 }
