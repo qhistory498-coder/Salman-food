@@ -451,19 +451,20 @@ ${if (specialRequest.trim().isNotEmpty()) "📝 *Note:* ${specialRequest.trim()}
 _Salman Food App se bheja gaya order ✅_
     """.trimIndent()
 
+    val clientNumber = "917033680705"
+
     try {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, message)
-            putExtra("jid", "919631720803@s.whatsapp.net")
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://api.whatsapp.com/send?phone=$clientNumber&text=" + Uri.encode(message))
             setPackage("com.whatsapp")
         }
         context.startActivity(intent)
     } catch (_: Exception) {
         try {
-            val fallbackUrl = "https://api.whatsapp.com/send?phone=919631720803&text=" + Uri.encode(message)
-            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl))
-            context.startActivity(fallbackIntent)
+            val genericIntent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://api.whatsapp.com/send?phone=$clientNumber&text=" + Uri.encode(message))
+            }
+            context.startActivity(genericIntent)
         } catch (_: Exception) {
             Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
         }
