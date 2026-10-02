@@ -19,13 +19,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Keystore and Dummy Config
+      - name: Setup Fixed Keystore
         run: |
-          mkdir -p ~/.android app Salman-food/app
-          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          cp ~/.android/debug.keystore debug.keystore
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" -startdate "2024/01/01 00:00:00"
+          cp ~/.android/debug.keystore debug.keystore 2>/dev/null || true
           cp ~/.android/debug.keystore app/debug.keystore 2>/dev/null || true
-          cp ~/.android/debug.keystore Salman-food/debug.keystore 2>/dev/null || true
 
       - name: Disable Google Services Plugin Check
         run: |
@@ -36,12 +35,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build APK with Auto Version
-        run: gradle assembleDebug -PversionCode=${{ github.run_number }} -x processDebugGoogleServices --stacktrace --no-daemon
+        run: gradle assembleDebug -PversionCode=${{ github.run_number }} -x processDebugGoogleServices
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: SalmanFood-APK
-          path: "**/build/outputs/apk/**/*.apk"
+          path: "**/build/outputs/apk/debug/*.apk"
           
